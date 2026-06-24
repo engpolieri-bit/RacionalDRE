@@ -1,2 +1,0 @@
-# RacionalDRE
-racional com DRE
