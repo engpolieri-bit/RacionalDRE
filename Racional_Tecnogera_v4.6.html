@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tecnogera – Racional LPU</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --orange:#E8630A;--orange2:#FFF3E0;--dark:#1F2937;
+  --yellow:#FFF9C4;--blue-f:#E8F4FD;--green:#E8F5E9;--red:#FFEBEE;
+  --gray:#F5F5F5;--border:#D1D5DB;--muted:#6B7280;
+  --ok:#16A34A;--warn:#D97706;--bad:#DC2626;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:12px;background:#EAECF0;color:#111827}
+
+.hdr{background:var(--dark);position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.35);display:flex;flex-direction:column}
+.hdr-line1{padding:8px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)}
+.hdr-line2{padding:7px 14px;display:flex;gap:6px}
+.hdr-logo{display:flex;align-items:center;gap:10px}
+.hdr-dot{width:22px;height:22px;background:var(--orange);border-radius:50%;flex-shrink:0}
+.hdr-title{color:#fff;font-size:14px;font-weight:700}
+.hdr-sub{color:#9CA3AF;font-size:10px}
+.hdr-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;border:none;border-radius:5px;padding:6px 8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;color:#fff}
+.hdr-btn:hover{opacity:.88}
+.hdr-btn-green {background:#059669}
+.hdr-btn-blue  {background:#2563EB}
+.hdr-btn-dark  {background:#374151}
+.hdr-btn-orange{background:var(--orange)}
+/* manter compatibilidade btn-exp para outros usos */
+.btn-exp{background:var(--orange);color:#fff;border:none;padding:7px 16px;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-exp:hover{opacity:.85}
+/* responsivo desktop: linha única */
+@media(min-width:700px){
+  .hdr{flex-direction:row;align-items:center;padding:9px 18px}
+  .hdr-line1{border-bottom:none;padding:0;flex:0 0 auto}
+  .hdr-line2{padding:0;flex:0 0 auto;gap:8px}
+  .hdr-btn{flex:none;padding:7px 14px;font-size:12px}
+}
+
+.wrap{max-width:1600px;margin:0 auto;padding:14px}
+.card{background:#fff;border-radius:9px;box-shadow:0 1px 4px rgba(0,0,0,.09);margin-bottom:14px;overflow:hidden}
+.card-hdr{background:var(--dark);color:#fff;padding:9px 14px;font-weight:700;font-size:11px;letter-spacing:.7px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.badge{background:var(--orange);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600}
+.card-body{padding:12px 14px}
+
+.ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:9px}
+.f{display:flex;flex-direction:column;gap:3px}
+.f label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.f input,.f select{border:1.5px solid var(--border);border-radius:5px;padding:5px 7px;font-size:12px;font-family:inherit;background:var(--yellow);color:#1a3a6b;font-weight:600}
+.f input:focus,.f select:focus{outline:none;border-color:var(--orange)}
+.f .ro{background:var(--blue-f);color:#374151;font-weight:500;border-color:#C3DCF0;cursor:default}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:var(--dark);color:#fff;padding:7px 5px;text-align:center;font-size:10px;font-weight:600;white-space:nowrap}
+td{padding:4px 4px;border-bottom:1px solid #ECEFF1;vertical-align:middle}
+tr:nth-child(even) td{background:#FAFAFA}
+tr:hover td{background:#FFF8F3}
+td input,td select{width:100%;border:1.5px solid transparent;border-radius:4px;padding:3px 5px;font-size:11px;font-family:inherit;background:transparent}
+td input:focus,td select:focus{outline:none;border-color:var(--orange);background:#fff}
+.iy{background:var(--yellow)!important;color:#1a3a6b!important;font-weight:600!important}
+.ir{background:var(--blue-f)!important;color:#374151!important;border-color:#C3DCF0!important;cursor:default!important}
+.iw{background:var(--blue-f)!important;font-weight:700!important;color:var(--dark)!important}
+
+.s-ok  {color:var(--ok);font-weight:700;text-align:center;font-size:11px}
+.s-warn{color:var(--warn);font-weight:700;text-align:center;font-size:11px}
+.s-bad {color:var(--bad);font-weight:700;text-align:center;font-size:11px}
+.s-muted{color:#ccc;text-align:center}
+
+.tot-row td{background:var(--orange2)!important;font-weight:700;border-top:2px solid var(--orange);font-size:11px}
+.tot2-row td{background:#E3F2FD!important;font-weight:600;font-size:11px;color:#1565C0}
+
+.btn-add{margin:8px 14px 10px;background:transparent;border:1.5px dashed var(--orange);color:var(--orange);padding:5px 13px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600}
+.btn-add:hover{background:var(--orange2)}
+
+.del-btn{width:20px;height:20px;background:#FFEBEE;border:1px solid #FFCDD2;border-radius:4px;cursor:pointer;color:var(--bad);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.del-btn:hover{background:var(--bad);color:#fff}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:10px;padding:24px 28px;max-width:400px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal h3{font-size:14px;font-weight:700;margin-bottom:8px;color:var(--dark)}
+.modal p{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end}
+.modal-btns button{padding:7px 18px;border-radius:6px;border:none;cursor:pointer;font-weight:700;font-size:12px}
+.btn-sim{background:var(--bad);color:#fff}
+.btn-nao{background:var(--gray);color:var(--dark);border:1.5px solid var(--border)!important}
+
+/* DRE */
+.dre-tbl{width:100%}
+.dre-tbl td{padding:5px 10px;border-bottom:1px solid #ECEFF1}
+.dre-rb td{background:var(--green)!important;font-weight:700}
+.dre-cost td{background:var(--red)!important}
+.dre-tot td{background:var(--orange2)!important;font-weight:700;border-top:2px solid var(--orange)}
+.dre-mc td{background:#B3E5FC!important;font-weight:700;font-size:13px}
+.dre-eb td{background:#C8E6C9!important;font-weight:700;font-size:13px}
+.dre-val{text-align:right;white-space:nowrap;font-weight:600;min-width:140px}
+.dre-pct{text-align:right;color:var(--muted);font-size:10px;width:65px}
+.dre-nota{font-size:10px;color:var(--muted);font-style:italic;padding-left:8px}
+
+.diesel-section{display:none}
+.diesel-section.active{display:block}
+
+.leg{display:flex;gap:14px;flex-wrap:wrap;padding:8px 14px;background:#F8F9FA;border-top:1px solid var(--border);font-size:10px;color:var(--muted)}
+.leg-i{display:flex;align-items:center;gap:4px}
+.leg-d{width:11px;height:11px;border-radius:3px}
+
+/* Número formatado nos inputs amarelos */
+input.iy-num{text-align:right}
+
+/* ══ PRINT / PDF ══════════════════════════════════════════════════ */
+@media print {
+  @page { size: A4 landscape; margin: 10mm 8mm; }
+
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; font-size: 8pt; margin: 0; }
+
+  /* Ocultar elementos de UI */
+  .hdr-line2, .hdr, .btn-add, .del-btn, .badge, .modal-overlay,
+  .leg, #diesel_card, .diesel-section, .diesel-toggle,
+  #chrome-banner,
+  td input[type=number]::-webkit-inner-spin-button { display: none !important; }
+
+  /* Ocultar placeholders e textos de UI nos inputs */
+  input::placeholder { color: transparent !important; }
+
+  /* Cabeçalho de impressão */
+  .print-header { display: flex !important; }
+
+  /* Layout */
+  .wrap { max-width: 100%; padding: 0; margin: 0; }
+  .card {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin-bottom: 6pt !important;
+    break-inside: avoid;
+    border: 1px solid #ddd !important;
+    overflow: visible !important;
+  }
+  .card-hdr { padding: 4pt 8pt !important; font-size: 8pt !important; }
+  .card-body { padding: 5pt 8pt !important; }
+
+  /* Identificação */
+  .ig { grid-template-columns: repeat(5, 1fr) !important; gap: 4pt !important; }
+  .f label { font-size: 6.5pt !important; }
+  .f input, .f select {
+    border: 1px solid #ccc !important;
+    padding: 2pt 3pt !important;
+    font-size: 7.5pt !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+    -webkit-appearance: none; appearance: none;
+  }
+  .f .ro { background: #f5f5f5 !important; }
+
+  /* Tabela equipamentos — forçar caber na página */
+  .tbl-wrap { overflow: visible !important; }
+  table {
+    font-size: 6.5pt !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+  th {
+    padding: 3pt 2pt !important;
+    font-size: 6pt !important;
+    white-space: normal !important;
+    line-height: 1.2 !important;
+    word-break: break-word !important;
+  }
+  td {
+    padding: 2pt 2pt !important;
+    border-bottom: 0.5px solid #eee !important;
+    overflow: hidden !important;
+    word-break: break-word !important;
+  }
+  td input, td select {
+    border: none !important;
+    background: transparent !important;
+    color: #000 !important;
+    font-size: 6.5pt !important;
+    font-weight: inherit !important;
+    padding: 0 !important;
+    width: 100% !important;
+    -webkit-appearance: none; appearance: none;
+  }
+  td input.iy { background: #FFFDE7 !important; }
+  td input.ir, td input.iw { background: #E8F4FD !important; }
+
+  /* Larguras fixas das colunas de equipamentos */
+  #tbl_eq th:nth-child(1), #tbl_eq td:nth-child(1) { width: 18pt !important; }
+  #tbl_eq th:nth-child(2), #tbl_eq td:nth-child(2) { width: 52pt !important; }
+  #tbl_eq th:nth-child(3), #tbl_eq td:nth-child(3) { width: 52pt !important; }
+  #tbl_eq th:nth-child(4), #tbl_eq td:nth-child(4) { width: 22pt !important; }
+  #tbl_eq th:nth-child(5), #tbl_eq td:nth-child(5) { width: 30pt !important; }
+  #tbl_eq th:nth-child(6), #tbl_eq td:nth-child(6) { width: 44pt !important; }
+  #tbl_eq th:nth-child(7), #tbl_eq td:nth-child(7) { width: 44pt !important; }
+  #tbl_eq th:nth-child(8), #tbl_eq td:nth-child(8) { width: 28pt !important; }
+  #tbl_eq th:nth-child(9), #tbl_eq td:nth-child(9) { width: 42pt !important; }
+  #tbl_eq th:nth-child(10), #tbl_eq td:nth-child(10) { width: 36pt !important; }
+  #tbl_eq th:nth-child(11), #tbl_eq td:nth-child(11) { width: 28pt !important; }
+  #tbl_eq th:nth-child(12), #tbl_eq td:nth-child(12) { width: 26pt !important; }
+  #tbl_eq th:nth-child(13), #tbl_eq td:nth-child(13) { width: 44pt !important; }
+  #tbl_eq th:nth-child(14), #tbl_eq td:nth-child(14) { width: 44pt !important; }
+  #tbl_eq th:nth-child(15), #tbl_eq td:nth-child(15) { width: 38pt !important; }
+  #tbl_eq th:nth-child(16), #tbl_eq td:nth-child(16) { width: 28pt !important; }
+
+  /* Totais */
+  .tot-row td { background: #FFF3E0 !important; font-size: 6.5pt !important; }
+  .tot2-row td { background: #E3F2FD !important; font-size: 6pt !important; }
+
+  /* Tabela serviços */
+  #tbl_srv th:nth-child(1), #tbl_srv td:nth-child(1) { width: 18pt !important; }
+  #tbl_srv th:nth-child(2), #tbl_srv td:nth-child(2) { width: 18pt !important; }
+  #tbl_srv th:nth-child(3), #tbl_srv td:nth-child(3) { width: 50pt !important; }
+  #tbl_srv th:nth-child(4), #tbl_srv td:nth-child(4) { width: 60pt !important; }
+  #tbl_srv th:nth-child(5), #tbl_srv td:nth-child(5) { width: 50pt !important; }
+
+  /* DRE */
+  .dre-tbl { table-layout: auto !important; }
+  .dre-tbl td { padding: 2pt 6pt !important; font-size: 7.5pt !important; }
+  .dre-rb td  { background: #E8F5E9 !important; }
+  .dre-cost td{ background: #FFEBEE !important; }
+  .dre-tot td { background: #FFF3E0 !important; }
+  .dre-mc td  { background: #B3E5FC !important; }
+  .dre-eb td  { background: #C8E6C9 !important; }
+
+  /* Ocultar inputs editáveis do DRE (% e checkbox) — mostrar só o span com valor */
+  .dre-tbl input[type=number],
+  .dre-tbl input[type=checkbox],
+  .dre-tbl label { display: none !important; }
+
+  /* Ocultar coluna "Notas" do DRE no PDF para ganhar espaço */
+  .dre-nota { display: none !important; }
+  .dre-pct { width: 60pt !important; }
+
+  /* Ocultar "observação…" vazio nas linhas de serviço */
+  td input[placeholder="observação…"]:placeholder-shown { visibility: hidden !important; }
+
+  input[readonly] { border: none !important; }
+  .card { page-break-inside: avoid; }
+}
+
+/* Cabeçalho visível só no print */
+.print-header {
+  display: none;
+  background: #E8630A;
+  color: #fff;
+  padding: 8pt 12pt;
+  font-size: 14pt;
+  font-weight: 700;
+  align-items: center;
+  gap: 12pt;
+  margin-bottom: 8pt;
+}
+.print-header-sub { font-size: 9pt; opacity: .8; margin-top: 2pt; }
+
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── Banner Chrome iOS ─────────────────────────────────────── */
+#chrome-banner{
+  display:none;
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:#1a73e8;color:#fff;
+  padding:12px 16px;
+  align-items:center;justify-content:space-between;gap:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+#chrome-banner.show{display:flex}
+#chrome-banner-msg{font-size:13px;font-weight:600;flex:1;line-height:1.4}
+#chrome-banner-msg span{display:block;font-size:11px;font-weight:400;opacity:.85;margin-top:2px}
+#chrome-banner-btn{
+  background:#fff;color:#1a73e8;border:none;
+  padding:8px 14px;border-radius:20px;
+  font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0
+}
+#chrome-banner-close{
+  background:transparent;border:none;color:#fff;
+  font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;opacity:.8
+}
+/* Empurra o conteúdo para baixo quando banner aparece */
+body.has-banner .hdr{top:56px}
+body.has-banner{padding-top:56px}
+@media(max-width:400px){
+  #chrome-banner{flex-wrap:wrap}
+  body.has-banner{padding-top:72px}
+  body.has-banner .hdr{top:72px}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal_title">Confirmar exclusão</h3>
+    <p id="modal_msg">Deseja realmente apagar esta linha?</p>
+    <div class="modal-btns">
+      <button class="btn-nao" onclick="closeModal()">Não</button>
+      <button class="btn-sim" onclick="confirmDelete()">Sim, apagar</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <!-- Linha 1: logo + subtítulo -->
+  <div class="hdr-line1">
+    <div class="hdr-logo">
+      <div class="hdr-dot"></div>
+      <div>
+        <div class="hdr-title">TECNOGERA</div>
+        <div class="hdr-sub">Racional de Precificação · LPU</div>
+      </div>
+    </div>
+  </div>
+  <!-- Linha 2: botões -->
+  <div class="hdr-line2">
+    <button class="hdr-btn hdr-btn-green" onclick="saveRacional()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Salvar
+    </button>
+    <label class="hdr-btn hdr-btn-blue" style="cursor:pointer">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Carregar
+      <input type="file" accept=".json,.html" onchange="loadRacional(event)" style="display:none">
+    </label>
+    <button class="hdr-btn hdr-btn-dark" onclick="exportPDF()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      PDF
+    </button>
+    <button class="hdr-btn hdr-btn-orange" onclick="exportXLSX()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Excel
+    </button>
+  </div>
+</div>
+
+<!-- Banner: Abrir no Chrome (iOS Safari only) -->
+<div id="chrome-banner">
+  <div id="chrome-banner-msg">
+    Para melhor experiência, abra no Chrome
+    <span>Toque no botão para abrir no Google Chrome</span>
+  </div>
+  <button id="chrome-banner-btn" onclick="openInChrome()">Abrir no Chrome</button>
+  <button id="chrome-banner-close" onclick="dismissChromeBanner()" aria-label="Fechar">✕</button>
+</div>
+
+<div id="print-header-bar" class="print-header">
+  <div style="width:28pt;height:28pt;background:#fff;border-radius:50%;opacity:.9"></div>
+  <div>
+    <div>TECNOGERA  |  RACIONAL DE PRECIFICAÇÃO</div>
+    <div class="print-header-sub" id="ph_info"></div>
+  </div>
+</div>
+<div class="wrap">
+
+<!-- CABEÇALHO -->
+<div class="card">
+  <div class="card-hdr">📋 Identificação do Contrato</div>
+  <div class="card-body">
+    <div class="ig">
+      <div class="f"><label>Nome do Cliente</label><input id="i_cliente" placeholder="NOME CLIENTE"></div>
+      <div class="f"><label>Nome da Obra / Projeto</label><input id="i_obra" placeholder="NOME DA OBRA"></div>
+      <div class="f"><label>Cotação Nº</label><input id="i_cotacao" placeholder="00000000"></div>
+      <div class="f"><label>Data</label><input id="i_data" type="date"></div>
+      <div class="f"><label>Período (dias)</label><input id="i_dias" type="number" value="30" min="1" oninput="calcAll()"></div>
+      <div class="f"><label>Períodos de 30 dias</label><input id="i_periodos" class="ro" readonly></div>
+      <div class="f"><label>Yield Alvo (%/mês)</label><input id="i_yield_alvo" type="number" value="10" step="0.01" min="0" oninput="calcAll()"></div>
+      <div class="f"><label>Depr. GG (% a.a.)</label><input id="i_depr_gg" type="number" value="10" step="0.1" oninput="calcAll()"></div>
+      <div class="f"><label>Depr. Acessórios (% a.a.)</label><input id="i_depr_ac" type="number" value="20" step="0.1" oninput="calcAll()"></div>
+    </div>
+  </div>
+  <div class="leg">
+    <div class="leg-i"><div class="leg-d" style="background:var(--yellow);border:1px solid #ccc"></div>Input manual</div>
+    <div class="leg-i"><div class="leg-d" style="background:var(--blue-f);border:1px solid #C3DCF0"></div>Cálculo automático</div>
+    <div class="leg-i"><div class="leg-d" style="background:var(--green);border:1px solid #a5d6a7"></div>OK / Positivo</div>
+    <div class="leg-i"><div class="leg-d" style="background:var(--red);border:1px solid #ef9a9a"></div>Custo / Alerta</div>
+  </div>
+</div>
+
+<!-- EQUIPAMENTOS -->
+<div class="card">
+  <div class="card-hdr">⚡ Equipamentos — Locação <span class="badge">Locação Calc ↔ Yield bidirecional</span></div>
+  <div class="tbl-wrap">
+  <table id="tbl_eq">
+    <thead><tr>
+      <th style="width:24px"></th>
+      <th style="width:28px">#</th>
+      <th style="width:115px">Categoria</th>
+      <th style="min-width:170px">Item / Equipamento</th>
+      <th style="width:74px">Qtd</th>
+      <th style="width:88px">Franquia<br>Diária (h)</th>
+      <th style="width:115px">CAPEX Unit (R$)</th>
+      <th style="width:115px">CAPEX Total (R$)</th>
+      <th style="width:90px">Yield<br>(%/mês)</th>
+      <th style="width:125px">Locação Calc (R$)<br><span style="font-weight:400;font-size:9px;color:#9CA3AF">yield OU valor</span></th>
+      <th style="width:115px">Preço Sistema (R$)<br><span style="font-weight:400;font-size:9px;color:#9CA3AF">dado fixo SF</span></th>
+      <th style="width:105px">Desc/Extra (R$)</th>
+      <th style="width:80px">Desc/Extra (%)</th>
+      <th style="width:125px">Preço Final Unit (R$)</th>
+      <th style="width:125px">Total Período (R$)</th>
+      <th style="width:110px">Depreciação (R$)</th>
+      <th style="width:80px">Status</th>
+    </tr></thead>
+    <tbody id="tbody_eq"></tbody>
+    <tfoot>
+      <tr class="tot-row" id="tfoot_eq1">
+        <td colspan="7" style="text-align:right;padding-right:8px">TOTAL EQUIPAMENTOS</td>
+        <td id="tot_capex" style="text-align:right"></td>
+        <td id="tot_yield_med" style="text-align:right"></td>
+        <td id="tot_loc_men" style="text-align:right"></td>
+        <td></td>
+        <td id="tot_desc_rs" style="text-align:right"></td>
+        <td id="tot_desc_med" style="text-align:right"></td>
+        <td></td>
+        <td id="tot_periodo" style="text-align:right"></td>
+        <td id="tot_depr" style="text-align:right"></td>
+        <td></td>
+      </tr>
+      <tr class="tot2-row">
+        <td colspan="7"></td>
+        <td style="text-align:right;font-size:9px;color:var(--muted);line-height:1.3">CAPEX<br>Total</td>
+        <td style="text-align:right;font-size:9px;color:var(--muted);line-height:1.3">Yield<br>Médio</td>
+        <td style="text-align:right;font-size:9px;color:var(--muted);line-height:1.3">Locação<br>Mensal Total</td>
+        <td></td>
+        <td style="text-align:right;font-size:9px;color:var(--muted);line-height:1.3">Desc/Extra<br>Total R$</td>
+        <td style="text-align:right;font-size:9px;color:var(--muted);line-height:1.3">Desc.<br>Médio %</td>
+        <td></td>
+        <td style="text-align:right;font-size:9px;color:var(--muted);line-height:1.3">Total<br>Período</td>
+        <td style="text-align:right;font-size:9px;color:var(--muted);line-height:1.3">Depreciação<br>Total</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+  <button class="btn-add" onclick="addEquipRow()">＋ Adicionar linha</button>
+</div>
+
+<!-- DIESEL -->
+<div class="card" id="diesel_card">
+  <div class="card-hdr">⛽ Racional de Combustível (Diesel)</div>
+  <div class="card-body">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <label style="font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase">Diesel incluso no contrato?</label>
+      <select id="diesel_incluso" onchange="toggleDiesel()" style="border:1.5px solid var(--border);border-radius:5px;padding:5px 10px;font-size:12px;font-weight:700;background:var(--yellow);color:#1a3a6b;cursor:pointer">
+        <option value="nao">Não</option>
+        <option value="sim">Sim</option>
+      </select>
+    </div>
+    <div id="diesel_section" class="diesel-section">
+      <!-- Layout diesel: parâmetros em cima, simulação embaixo (sem grid lado a lado que causa sobreposição) -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <!-- Parâmetros -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;max-width:700px">
+          <div class="f"><label>Custo Compra (R$/L)</label><input id="d_custo" type="number" value="10.50" step="0.01" oninput="calcDiesel()"></div>
+          <div class="f"><label>PIS/COFINS (R$/L)</label><input id="d_pis" type="number" value="0.97" step="0.01" oninput="calcDiesel()"></div>
+          <div class="f"><label>Custo Total c/ Trib.</label><input id="d_total" class="ro" readonly></div>
+          <div class="f"><label>Markup Diesel (%)</label><input id="d_markup" type="number" value="68" step="1" oninput="calcDiesel()"></div>
+          <div class="f"><label>Valor Venda (R$/L)</label><input id="d_venda" class="ro" readonly></div>
+          <div class="f"><label>Margem Diesel (%)</label><input id="d_margem" class="ro" readonly></div>
+        </div>
+        <!-- Simulação por gerador -->
+        <div>
+          <p style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Simulação por Gerador (franquia × consumo)</p>
+          <div style="overflow-x:auto">
+            <table id="tbl_diesel" style="font-size:11px;min-width:500px">
+              <thead><tr>
+                <th style="text-align:left;min-width:180px">Gerador</th>
+                <th style="width:100px">Franquia (h/dia)</th>
+                <th style="width:110px">Consumo (L/h)</th>
+                <th style="width:140px">Diesel Mensal (R$)</th>
+                <th style="width:90px">Margem (%)</th>
+              </tr></thead>
+              <tbody id="tbody_diesel"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVIÇOS -->
+<div class="card">
+  <div class="card-hdr">🔧 Serviços / Mobilização</div>
+  <div class="tbl-wrap">
+  <table id="tbl_srv">
+    <thead><tr>
+      <th style="width:24px"></th>
+      <th style="width:40px">#</th>
+      <th style="width:115px">Categoria</th>
+      <th style="min-width:160px">Serviço</th>
+      <th style="min-width:160px">Observação</th>
+      <th style="width:65px">Qtd</th>
+      <th style="width:120px">Custo Unit (R$)</th>
+      <th style="width:120px">Custo Total (R$)</th>
+      <th style="width:120px">Preço Cobrado (R$)</th>
+      <th style="width:100px">Desc/Extra (R$)</th>
+      <th style="width:120px">Preço Final (R$)</th>
+      <th style="width:70px">Markup</th>
+      <th style="width:70px">Margem</th>
+    </tr></thead>
+    <tbody id="tbody_srv"></tbody>
+    <tfoot><tr class="tot-row">
+      <td colspan="7" style="text-align:right;padding-right:8px">TOTAL SERVIÇOS</td>
+      <td id="stot_c" style="text-align:right"></td>
+      <td></td><td></td>
+      <td id="stot_f" style="text-align:right"></td>
+      <td></td><td></td>
+    </tr></tfoot>
+  </table>
+  </div>
+  <button class="btn-add" onclick="addSrvRow()">＋ Adicionar linha</button>
+</div>
+
+<!-- DRE -->
+<div class="card">
+  <div class="card-hdr">📊 DRE Simplificada — Análise de Rentabilidade</div>
+  <div class="card-body" style="padding:0">
+  <table class="dre-tbl">
+    <colgroup><col style="width:38%"><col style="width:14%"><col style="width:7%"><col></colgroup>
+    <thead><tr style="background:var(--dark)">
+      <th style="text-align:left;padding:7px 12px;color:#fff;font-size:10px">Linha DRE</th>
+      <th style="text-align:right;padding:7px 12px;color:#fff;font-size:10px">R$ (período)</th>
+      <th style="text-align:right;padding:7px 12px;color:#9CA3AF;font-size:10px">% R.B.</th>
+      <th style="text-align:left;padding:7px 12px;color:#9CA3AF;font-size:10px">Notas</th>
+    </tr></thead>
+    <tbody id="tbody_dre"></tbody>
+  </table>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+const fmtBRL = v => {
+  if(v===''||v==null||isNaN(v)) return '—';
+  return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2}).format(v);
+};
+const fmtPct = v => {
+  if(v===''||v==null||isNaN(v)) return '—';
+  return (v*100).toFixed(2).replace('.',',')+'%';
+};
+const gv = id => parseFloat(document.getElementById(id)?.value)||0;
+const isGG = s => /Gerador/i.test(s||'');
+
+// formatar input amarelo ao perder foco
+function setupFmtInput(el){
+  if(!el||el._fmtSetup) return;
+  el._fmtSetup=true;
+  el._rawVal=el.value;
+  el.addEventListener('focus',function(){
+    // restore raw numeric on focus
+    this.value=this._rawVal||'';
+    this.style.textAlign='right';
+  });
+  el.addEventListener('input',function(){
+    this._rawVal=this.value;
+  });
+  el.addEventListener('blur',function(){
+    const n=parseFloat(this.value.replace(',','.'));
+    if(!isNaN(n)){
+      this._rawVal=n;
+      this.value=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+    }
+  });
+}
+function applyFmt(id){
+  const el=document.getElementById(id);
+  if(el) setupFmtInput(el);
+}
+
+// ═══════════════════════════════════════════════════════
+// CAPEX PADRÃO POR ITEM
+// ═══════════════════════════════════════════════════════
+const CAPEX_BASE = {
+  'Gerador 15 kVA':   48000,
+  'Gerador 25 kVA':   54000,
+  'Gerador 40 kVA':   70000,
+  'Gerador 45 kVA':   75000,
+  'Gerador 55 kVA':   81000,
+  'Gerador 60 kVA':   83202.66,
+  'Gerador 75 kVA':   84000,
+  'Gerador 100 kVA':  102600,
+  'Gerador 110 kVA':  106206.01,
+  'Gerador 150 kVA':  120000,
+  'Gerador 180 kVA':  129668.43,
+  'Gerador 220 kVA':  143070.38,
+  'Gerador 250 kVA':  192000,
+  'Gerador 255 kVA':  110000,
+  'Gerador 260 kVA':  169600.21,
+  'Gerador 315 kVA':  222080.15,
+  'Gerador 325 kVA':  235344.83,
+  'Gerador 360 kVA':  240000,
+  'Gerador 375 kVA':  259048.56,
+  'Gerador 500 kVA':  300000,
+  'Gerador 550 kVA':  355000,
+  'Gerador 700 kVA':  235344.83,
+  'Gerador 750 kVA':  510000,
+  'Gerador 1000 kVA': 800000,
+  'Gerador 1100 kVA': 800000,
+  'Cabo 25mm² x 25m': 975,
+  'Cabo 35mm² x 25m': 1100,
+  'Cabo 50mm² x 25m': 1200,
+  'Cabo 70mm² x 25m': 1363,
+  'Cabo 95mm² x 25m': 1850,
+  'Cabo 120mm² x 25m': 2302,
+  'Cabo 185mm² x 25m': 3100,
+  'QTR BT 800A': 45000,
+  'QTR BT 1600A': 65000,
+  'QTR BT 2000A': 80000,
+  'QTR BT 3200A': 95000,
+  'QTR BT 4000A': 116000,
+  'QTA 150A': 12056.04,
+  'QTA 250A': 10000,
+  'QTA 400A': 15000,
+  'QTA 630A': 17500,
+  'Tanque Externo 500 L': 6000,
+  'Tanque Externo 1.000 L': 10000,
+  'Bacia Contenção 1.000 L': 2635,
+  'Passa Cabo 1m – 5 vias': 300,
+  'Telemetria': 300,
+  'Torre de Iluminação Solar': 79245,
+  'Torre de Iluminação Diesel': 80000,
+};
+
+const LPH_BASE = {
+  'Gerador 15 kVA':   1.64,
+  'Gerador 25 kVA':   2.1,
+  'Gerador 40 kVA':   3.5,
+  'Gerador 45 kVA':   3.9,
+  'Gerador 55 kVA':   4.8,
+  'Gerador 60 kVA':   5.2,
+  'Gerador 75 kVA':   6.5,
+  'Gerador 100 kVA':  8.8,
+  'Gerador 110 kVA':  9.6,
+  'Gerador 150 kVA':  17.24,
+  'Gerador 180 kVA':  15.8,
+  'Gerador 220 kVA':  19.2,
+  'Gerador 250 kVA':  22.0,
+  'Gerador 255 kVA':  22.5,
+  'Gerador 260 kVA':  23.0,
+  'Gerador 315 kVA':  27.5,
+  'Gerador 325 kVA':  28.5,
+  'Gerador 360 kVA':  31.5,
+  'Gerador 375 kVA':  33.0,
+  'Gerador 500 kVA':  44.0,
+  'Gerador 550 kVA':  48.0,
+  'Gerador 700 kVA':  61.0,
+  'Gerador 750 kVA':  65.5,
+  'Gerador 1000 kVA': 87.0,
+  'Gerador 1100 kVA': 96.0,
+};
+
+// ═══════════════════════════════════════════════════════
+// CATEGORIAS
+// ═══════════════════════════════════════════════════════
+const CATS = {
+  '': [],
+  'Geradores': [
+    'Gerador 15 kVA','Gerador 25 kVA','Gerador 40 kVA',
+    'Gerador 45 kVA','Gerador 55 kVA','Gerador 60 kVA',
+    'Gerador 75 kVA','Gerador 100 kVA','Gerador 110 kVA',
+    'Gerador 150 kVA','Gerador 180 kVA','Gerador 220 kVA',
+    'Gerador 250 kVA','Gerador 255 kVA','Gerador 260 kVA',
+    'Gerador 315 kVA','Gerador 325 kVA','Gerador 360 kVA',
+    'Gerador 375 kVA','Gerador 500 kVA','Gerador 550 kVA',
+    'Gerador 700 kVA','Gerador 750 kVA',
+    'Gerador 1000 kVA','Gerador 1100 kVA'],
+  'Cabos': ['Cabo 25mm² x 25m','Cabo 35mm² x 25m','Cabo 50mm² x 25m','Cabo 70mm² x 25m',
+    'Cabo 95mm² x 25m','Cabo 120mm² x 25m','Cabo 185mm² x 25m'],
+  'Quadros': [
+    'QTR BT 800A','QTR BT 1600A','QTR BT 2000A','QTR BT 3200A','QTR BT 4000A',
+    'QTA 150A','QTA 250A','QTA 400A','QTA 630A'],
+  'Torres de Iluminação': ['Torre de Iluminação Solar','Torre de Iluminação Diesel'],
+  'Acessórios': ['Tanque Externo 500 L','Tanque Externo 1.000 L','Bacia Contenção 1.000 L',
+    'Passa Cabo 1m – 5 vias','Telemetria','Silenciador'],
+};
+
+const SRV_CATS = {
+  '': [],
+  'Mão de Obra': ['Instalação','Desinstalação','Operação (30 dias)','Operador de Gerador','Técnico Elétrico','Engenheiro Responsável'],
+  'Logística': ['Frete ida e volta','Carga / Descarga','Frete de Substituição'],
+  'Documentos': ['As Built','Relatórios Diários','ART Elétrica','Laudo Técnico','Projeto Executivo'],
+  'Outros': ['Relatórios diários'],
+};
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let eqRows = [
+  {cat:'Geradores',item:'Gerador 15 kVA',qtd:3,franq:24,capex:48000,yield_pct:13.925,preco:6684},
+  {cat:'Geradores',item:'Gerador 100 kVA',qtd:6,franq:24,capex:102600,yield_pct:10.553,preco:8100},
+  {cat:'Geradores',item:'Gerador 150 kVA',qtd:2,franq:24,capex:120000,yield_pct:8.709,preco:10451},
+  {cat:'Cabos',item:'Cabo 25mm² x 25m',qtd:15,franq:0,capex:975,yield_pct:10.488,preco:102.26},
+  {cat:'Cabos',item:'Cabo 70mm² x 25m',qtd:30,franq:0,capex:1363,yield_pct:15.036,preco:205},
+  {cat:'Cabos',item:'Cabo 120mm² x 25m',qtd:10,franq:0,capex:2302,yield_pct:10.491,preco:241.5},
+  {cat:'Acessórios',item:'Tanque Externo 1.000 L',qtd:11,franq:0,capex:10000,yield_pct:10,preco:1000},
+  {cat:'Acessórios',item:'Bacia Contenção 1.000 L',qtd:11,franq:0,capex:2635,yield_pct:23.985,preco:632},
+  {cat:'Acessórios',item:'Passa Cabo 1m – 5 vias',qtd:22,franq:0,capex:300,yield_pct:24.167,preco:72.5},
+  {cat:'Acessórios',item:'Telemetria',qtd:11,franq:0,capex:300,yield_pct:50,preco:150},
+];
+
+let srvRows = [
+  {cat:'Mão de Obra',srv:'Instalação',obs:'',qtd:11,custo:1796,preco:2694},
+  {cat:'Mão de Obra',srv:'Desinstalação',obs:'',qtd:11,custo:1796,preco:2694},
+  {cat:'Logística',srv:'Frete ida e volta',obs:'',qtd:11,custo:17630.8,preco:35261.60},
+  {cat:'Logística',srv:'Carga / Descarga',obs:'',qtd:11,custo:1900,preco:3800},
+  {cat:'Mão de Obra',srv:'Operação (30 dias)',obs:'',qtd:11,custo:63000,preco:91350},
+  {cat:'Documentos',srv:'As Built',obs:'',qtd:11,custo:9000,preco:18000},
+  {cat:'Documentos',srv:'Relatórios Diários',obs:'',qtd:11,custo:150,preco:1250},
+];
+
+// ═══════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════
+let _pendingDelete = null;
+function openModal(type, idx, label){
+  _pendingDelete = {type, idx};
+  document.getElementById('modal_title').textContent = `Apagar linha ${idx+1}`;
+  document.getElementById('modal_msg').textContent   =
+    `Deseja realmente apagar a linha ${idx+1} — "${label}"?\n\nEsta ação não pode ser desfeita.`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); _pendingDelete=null; }
+function confirmDelete(){
+  if(!_pendingDelete) return closeModal();
+  const {type,idx} = _pendingDelete;
+  if(type==='eq'){ eqRows.splice(idx,1); buildEquip(); }
+  if(type==='srv'){ srvRows.splice(idx,1); buildSrv(); }
+  closeModal();
+  calcAll();
+}
+
+// ═══════════════════════════════════════════════════════
+// BUILD EQUIPAMENTOS
+// ═══════════════════════════════════════════════════════
+function catOpts(sel,cats){
+  return Object.keys(cats).map(c=>`<option value="${c}"${c===sel?' selected':''}>${c||'— categoria —'}</option>`).join('');
+}
+function itemOpts(cat,sel,cats,allowManual=true){
+  const list = cats[cat]||[];
+  let o=`<option value="">— item —</option>`;
+  list.forEach(it=>o+=`<option value="${it}"${it===sel?' selected':''}>${it}</option>`);
+  if(allowManual) o+=`<option value="__manual__"${sel==='__manual__'?' selected':''}>✏ Digitar manualmente</option>`;
+  return o;
+}
+
+function buildEquip(){
+  document.getElementById('tbody_eq').innerHTML='';
+  eqRows.forEach((_,i)=>renderEquipRow(i));
+}
+
+function renderEquipRow(i){
+  const d=eqRows[i]||{};
+  const tb=document.getElementById('tbody_eq');
+  const tr=document.createElement('tr');
+  tr.id=`erow_${i}`;
+
+  // Always render as select; manual text input added dynamically by onItemChange
+  const itemCell = `<select class="iy" id="ei_item_${i}" onchange="onItemChange(${i})">${itemOpts(d.cat||'',d._manual?'__manual__':(d.item||''),CATS,true)}</select>`;
+
+  tr.innerHTML=`
+    <td style="text-align:center;padding:2px 4px">
+      <button class="del-btn" onclick="openModal('eq',${i},'${(d.item||'linha vazia').replace(/'/g,"\\'")}')">✕</button>
+    </td>
+    <td style="text-align:center;color:#9CA3AF;font-weight:700">${i+1}</td>
+    <td><select class="iy" id="ei_cat_${i}" onchange="onCatChange(${i})">${catOpts(d.cat||'',CATS)}</select></td>
+    <td id="ei_item_cell_${i}">${itemCell}</td>
+    <td><input type="number" class="iy" id="ei_qtd_${i}" value="${d.qtd||1}" min="0" style="text-align:center;width:100%" oninput="syncEq(${i})"></td>
+    <td><input type="number" class="iy" id="ei_franq_${i}" value="${d.franq||0}" min="0" step="0.5" style="text-align:right" oninput="syncEq(${i})"></td>
+    <td><input type="number" class="iy iy-num" id="ei_capex_${i}" value="${d.capex||0}" step="100" style="text-align:right" oninput="onCapexChange(${i})"></td>
+    <td><input class="ir" readonly id="ei_capexT_${i}" style="text-align:right"></td>
+    <td><input type="number" class="iy" id="ei_yield_${i}" value="${d.yield_pct||''}" step="0.001" placeholder="yield%" style="text-align:right" oninput="onYieldEdit(${i})"></td>
+    <td><input type="number" class="iy iy-num" id="ei_loc_${i}" value="${d.capex&&d.yield_pct?(d.capex*d.yield_pct/100).toFixed(2):''}" step="1" placeholder="ou valor R$" style="text-align:right" oninput="onLocEdit(${i})"></td>
+    <td><input type="number" class="iy iy-num" id="ei_sist_${i}" value="${d.preco||0}" step="1" style="text-align:right" oninput="syncEq(${i})"></td>
+    <td><input class="ir" readonly id="ei_desc_r_${i}" style="text-align:right"></td>
+    <td><input class="ir" readonly id="ei_desc_p_${i}" style="text-align:right"></td>
+    <td><input class="iw" readonly id="ei_final_${i}" style="text-align:right"></td>
+    <td><input class="iw" readonly id="ei_per_${i}" style="text-align:right"></td>
+    <td><input class="ir" readonly id="ei_depr_${i}" style="text-align:right"></td>
+    <td id="ei_st_${i}" class="s-muted">—</td>
+  `;
+  tb.appendChild(tr);
+  calcEquipRow(i);
+}
+
+function addEquipRow(){
+  eqRows.push({cat:'',item:'',qtd:1,franq:0,capex:0,yield_pct:0,preco:0,_manual:false});
+  renderEquipRow(eqRows.length-1);
+  syncDiesel();
+}
+
+function onCatChange(i){
+  const cat=document.getElementById(`ei_cat_${i}`).value;
+  eqRows[i].cat=cat; eqRows[i].item=''; eqRows[i]._manual=false;
+  const cell=document.getElementById(`ei_item_cell_${i}`);
+  cell.innerHTML=`<select class="iy" id="ei_item_${i}" onchange="onItemChange(${i})">${itemOpts(cat,'',CATS,true)}</select>`;
+  syncEq(i);
+}
+
+// onItemCatChange removed – no longer needed
+
+function onItemChange(i){
+  const sel=document.getElementById(`ei_item_${i}`)?.value||'';
+  const cell=document.getElementById(`ei_item_cell_${i}`);
+
+  if(sel==='__manual__'){
+    eqRows[i]._manual=true;
+    // Keep the existing select visible, add a text input below it
+    // Remove any existing manual input first
+    const existing=cell.querySelector('input.manual-txt');
+    if(!existing){
+      const inp=document.createElement('input');
+      inp.type='text';
+      inp.className='iy manual-txt';
+      inp.placeholder='Descreva o item';
+      inp.style.cssText='width:100%;margin-top:3px;border-radius:4px;padding:3px 5px;font-size:11px';
+      inp.oninput=()=>{ eqRows[i].item=inp.value; calcEquipRow(i); syncDiesel(); };
+      cell.appendChild(inp);
+      inp.focus();
+    }
+    return;
+  }
+
+  // Normal selection – remove manual text input if present
+  const existingInp=cell.querySelector('input.manual-txt');
+  if(existingInp) existingInp.remove();
+  eqRows[i]._manual=false;
+  eqRows[i].item=sel;
+
+  // auto-fill CAPEX
+  if(CAPEX_BASE[sel]){
+    const capexEl=document.getElementById(`ei_capex_${i}`);
+    if(capexEl){ capexEl.value=CAPEX_BASE[sel]; }
+  }
+  syncEq(i);
+  syncDiesel();
+}
+
+function onCapexChange(i){
+  const capex=parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+  const y=parseFloat(document.getElementById(`ei_yield_${i}`)?.value);
+  if(!isNaN(y)&&y>0&&capex>0)
+    document.getElementById(`ei_loc_${i}`).value=(capex*y/100).toFixed(2);
+  syncEq(i);
+}
+function onYieldEdit(i){
+  const capex=parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+  const y=parseFloat(document.getElementById(`ei_yield_${i}`)?.value);
+  if(!isNaN(y)&&capex>0)
+    document.getElementById(`ei_loc_${i}`).value=(capex*y/100).toFixed(2);
+  syncEq(i);
+}
+function onLocEdit(i){
+  const capex=parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+  const loc=parseFloat(document.getElementById(`ei_loc_${i}`)?.value);
+  if(!isNaN(loc)&&capex>0)
+    document.getElementById(`ei_yield_${i}`).value=(loc/capex*100).toFixed(4);
+  syncEq(i);
+}
+
+function syncEq(i){
+  eqRows[i].item   = document.getElementById(`ei_item_${i}`)?.value||'';
+  eqRows[i].qtd    = parseFloat(document.getElementById(`ei_qtd_${i}`)?.value)||0;
+  eqRows[i].franq  = parseFloat(document.getElementById(`ei_franq_${i}`)?.value)||0;
+  eqRows[i].capex  = parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+  eqRows[i].yield_pct = parseFloat(document.getElementById(`ei_yield_${i}`)?.value)||0;
+  eqRows[i].preco  = parseFloat(document.getElementById(`ei_sist_${i}`)?.value)||0;
+  calcEquipRow(i);
+  syncDiesel();
+}
+
+function calcEquipRow(i){
+  const per   = Math.ceil(gv('i_dias')/30)||1;
+  const yAlvo = gv('i_yield_alvo')/100;
+  const dGG   = gv('i_depr_gg')/100;
+  const dAC   = gv('i_depr_ac')/100;
+  const item  = document.getElementById(`ei_item_${i}`)?.value||'';
+  const qtd   = parseFloat(document.getElementById(`ei_qtd_${i}`)?.value)||0;
+  const capex = parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+  const loc   = parseFloat(document.getElementById(`ei_loc_${i}`)?.value)||0;
+  const sist  = parseFloat(document.getElementById(`ei_sist_${i}`)?.value)||0;
+  const capexT= capex*qtd;
+  const descR = loc-sist;
+  const descP = sist>0?descR/sist:0;
+  const final_= loc;
+  const periodo= final_*qtd*per;
+  const dRate = isGG(item)?dGG:dAC;
+  const depr  = capex*(dRate/12)*per*qtd;
+  const yReal = capex>0&&loc>0?loc/capex:0;
+
+  const sv=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
+  sv(`ei_capexT_${i}`,fmtBRL(capexT));
+  sv(`ei_desc_r_${i}`,fmtBRL(descR));
+  sv(`ei_desc_p_${i}`,fmtPct(descP));
+  sv(`ei_final_${i}`, fmtBRL(final_));
+  sv(`ei_per_${i}`,   fmtBRL(periodo));
+  sv(`ei_depr_${i}`,  fmtBRL(depr));
+
+  const stEl=document.getElementById(`ei_st_${i}`);
+  if(!item||!capex||!loc){stEl.textContent='—';stEl.className='s-muted';return;}
+  if(yReal>=yAlvo){stEl.textContent='✔ OK';stEl.className='s-ok';}
+  else if(yReal>=yAlvo*0.9){stEl.textContent='⚠ PRÓXIMO';stEl.className='s-warn';}
+  else{stEl.textContent='✘ ABAIXO';stEl.className='s-bad';}
+
+  calcTotals();
+}
+
+function calcTotals(){
+  const per=Math.ceil(gv('i_dias')/30)||1;
+  let totCap=0,totPer=0,totDepr=0,totDesc=0,totLoc=0,totSist=0;
+  eqRows.forEach((_,i)=>{
+    const capex=parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+    const qtd  =parseFloat(document.getElementById(`ei_qtd_${i}`)?.value)||0;
+    const loc  =parseFloat(document.getElementById(`ei_loc_${i}`)?.value)||0;
+    const sist =parseFloat(document.getElementById(`ei_sist_${i}`)?.value)||0;
+    const dRate=isGG(document.getElementById(`ei_item_${i}`)?.value||'')?(gv('i_depr_gg')/100):(gv('i_depr_ac')/100);
+    totCap  +=capex*qtd;
+    totPer  +=loc*qtd*per;
+    totDepr +=capex*(dRate/12)*per*qtd;
+    totDesc +=(loc-sist);
+    totLoc  +=loc*qtd;   // mensal
+    totSist +=sist;
+  });
+  const yMed = totCap>0?totLoc/totCap:0;
+  const dMed = totSist>0?totDesc/totSist:0;
+  document.getElementById('tot_capex').textContent    = fmtBRL(totCap);
+  document.getElementById('tot_yield_med').textContent= fmtPct(yMed);
+  document.getElementById('tot_loc_men').textContent  = fmtBRL(totLoc);
+  document.getElementById('tot_desc_rs').textContent  = fmtBRL(totDesc);
+  document.getElementById('tot_desc_med').textContent = fmtPct(dMed);
+  document.getElementById('tot_periodo').textContent  = fmtBRL(totPer);
+  document.getElementById('tot_depr').textContent     = fmtBRL(totDepr);
+  calcServicos();
+}
+
+// ═══════════════════════════════════════════════════════
+// DIESEL
+// ═══════════════════════════════════════════════════════
+function toggleDiesel(){
+  const v=document.getElementById('diesel_incluso').value;
+  document.getElementById('diesel_section').classList.toggle('active',v==='sim');
+  syncDiesel();
+}
+function syncDiesel(){
+  if(document.getElementById('diesel_incluso').value!=='sim') return;
+  const tb=document.getElementById('tbody_diesel');
+  // preserve existing lph values
+  const existing={};
+  tb.querySelectorAll('tr[data-row]').forEach(r=>{
+    const idx=r.dataset.row;
+    const inp=r.querySelector('input[data-lph]')||r.querySelectorAll('input')[1];
+    if(inp) existing[idx]=parseFloat(inp.value)||0;
+  });
+  tb.innerHTML='';
+  eqRows.forEach((d,i)=>{
+    const item=document.getElementById(`ei_item_${i}`)?.value||d.item||'';
+    if(!isGG(item)) return;
+    const franq=parseFloat(document.getElementById(`ei_franq_${i}`)?.value)||d.franq||0;
+    const defLph=LPH_BASE[item]||0;
+    const lph=existing[i]!==undefined?existing[i]:defLph;
+    tb.insertAdjacentHTML('beforeend',`
+      <tr data-row="${i}" style="background:${i%2===0?'#fff':'#FAFAFA'}">
+        <td style="padding:4px 8px">${item}</td>
+        <td style="padding:4px 8px;text-align:center;color:var(--muted)">${franq}h/dia</td>
+        <td style="padding:3px 5px"><input type="number" value="${lph}" step="0.01" class="iy" style="width:80px;text-align:right" oninput="calcDiesel()"></td>
+        <td id="dd_mens_${i}" style="padding:4px 8px;text-align:right;background:var(--blue-f)"></td>
+        <td id="dd_marg_${i}" style="padding:4px 8px;text-align:right;background:var(--blue-f)"></td>
+      </tr>`);
+  });
+  calcDiesel();
+}
+// global numeric venda so calcDRE can read it without BRL parsing
+let _vendaNum = 0;
+let _custoDieselTotal = 0;
+
+function calcDiesel(){
+  if(document.getElementById('diesel_incluso').value!=='sim'){ _vendaNum=0; _custoDieselTotal=0; calcDRE(); return; }
+  const custo=gv('d_custo'), pis=gv('d_pis');
+  const ct=custo+pis;
+  const mk=gv('d_markup')/100;
+  const venda=ct*(1+mk);
+  _vendaNum = venda;
+  _custoDieselTotal = ct;
+  const marg=venda>0?(venda-ct)/venda:0;
+  document.getElementById('d_total').value = ct.toFixed(3).replace('.',',');
+  document.getElementById('d_venda').value = fmtBRL(venda);
+  document.getElementById('d_margem').value = fmtPct(marg);
+  eqRows.forEach((_,i)=>{
+    const item=document.getElementById(`ei_item_${i}`)?.value||'';
+    if(!isGG(item)) return;
+    const franq=parseFloat(document.getElementById(`ei_franq_${i}`)?.value)||0;
+    const dRow=document.querySelector(`#tbody_diesel [data-row="${i}"]`);
+    if(!dRow) return;
+    const lph=parseFloat(dRow.querySelectorAll('input')[0]?.value)||0;
+    const mensal=lph*franq*30*venda;
+    const mEl=document.getElementById(`dd_mens_${i}`);
+    const mgEl=document.getElementById(`dd_marg_${i}`);
+    if(mEl)  mEl.textContent=fmtBRL(mensal);
+    if(mgEl) mgEl.textContent=fmtPct(marg);
+  });
+  calcDRE();
+}
+
+// ═══════════════════════════════════════════════════════
+// SERVIÇOS
+// ═══════════════════════════════════════════════════════
+function buildSrv(){
+  document.getElementById('tbody_srv').innerHTML='';
+  srvRows.forEach((_,i)=>renderSrvRow(i));
+}
+function renderSrvRow(i){
+  const d=srvRows[i]||{};
+  const tb=document.getElementById('tbody_srv');
+  const tr=document.createElement('tr');
+  tr.id=`srow_${i}`;
+  const cod=`S${i+1}`;
+  const srvOpts=(cat,sel)=>{
+    const list=SRV_CATS[cat]||[];
+    let o=`<option value="">— serviço —</option>`;
+    list.forEach(s=>o+=`<option value="${s}"${s===sel?' selected':''}>${s}</option>`);
+    o+=`<option value="__manual__"${sel==='__manual__'?' selected':''}>✏ Digitar manualmente</option>`;
+    return o;
+  };
+  tr.innerHTML=`
+    <td style="text-align:center;padding:2px 4px">
+      <button class="del-btn" onclick="openModal('srv',${i},'${(d.srv||'linha vazia').replace(/'/g,"\\'")}')">✕</button>
+    </td>
+    <td style="text-align:center;color:#9CA3AF;font-weight:700">${cod}</td>
+    <td><select class="iy" id="sc_cat_${i}" onchange="onSrvCatChange(${i})">${catOpts(d.cat||'',SRV_CATS)}</select></td>
+    <td id="sc_srv_cell_${i}"><select class="iy" id="sc_srv_${i}" onchange="onSrvChange(${i})">${srvOpts(d.cat||'',d.srv||'')}</select></td>
+    <td><input type="text" class="iy" id="sc_obs_${i}" value="${d.obs||''}" placeholder="observação…"></td>
+    <td><input type="number" class="iy" id="sq_${i}" value="${d.qtd||1}" style="text-align:center;width:100%" oninput="calcSrv(${i})"></td>
+    <td><input type="number" class="iy iy-num" id="sc_c_${i}" value="${d.custo||0}" step="10" style="text-align:right" oninput="calcSrv(${i})"></td>
+    <td><input class="ir" readonly id="sc_ct_${i}" style="text-align:right"></td>
+    <td><input type="number" class="iy iy-num" id="sc_p_${i}" value="${d.preco||0}" step="10" style="text-align:right" oninput="calcSrv(${i})"></td>
+    <td><input type="number" class="iy iy-num" id="sc_d_${i}" value="0" step="10" style="text-align:right" oninput="calcSrv(${i})"></td>
+    <td><input class="iw" readonly id="sc_f_${i}" style="text-align:right"></td>
+    <td id="sc_mk_${i}" style="text-align:right;color:var(--muted)"></td>
+    <td id="sc_mg_${i}" style="text-align:right;color:var(--muted)"></td>
+  `;
+  tb.appendChild(tr);
+  calcSrv(i);
+}
+function addSrvRow(){
+  srvRows.push({cat:'',srv:'',obs:'',qtd:1,custo:0,preco:0});
+  renderSrvRow(srvRows.length-1);
+}
+function onSrvCatChange(i){
+  const cat=document.getElementById(`sc_cat_${i}`).value;
+  srvRows[i].cat=cat; srvRows[i].srv='';
+  const list=SRV_CATS[cat]||[];
+  let o=`<option value="">— serviço —</option>`;
+  list.forEach(s=>o+=`<option value="${s}">${s}</option>`);
+  o+=`<option value="__manual__">✏ Digitar manualmente</option>`;
+  const cell=document.getElementById(`sc_srv_cell_${i}`);
+  cell.innerHTML=`<select class="iy" id="sc_srv_${i}" onchange="onSrvChange(${i})">${o}</select>`;
+}
+function onSrvChange(i){
+  const v=document.getElementById(`sc_srv_${i}`)?.value||'';
+  if(v==='__manual__'){
+    const cell=document.getElementById(`sc_srv_cell_${i}`);
+    cell.innerHTML=`<input type="text" class="iy" id="sc_srv_${i}" value="" placeholder="Descreva o serviço" oninput="calcSrv(${i})">`;
+  } else {
+    srvRows[i].srv=v;
+    calcSrv(i);
+  }
+}
+function calcSrv(i){
+  const qtd  =parseFloat(document.getElementById(`sq_${i}`)?.value)||0;
+  const custo=parseFloat(document.getElementById(`sc_c_${i}`)?.value)||0;
+  const preco=parseFloat(document.getElementById(`sc_p_${i}`)?.value)||0;
+  const desc =parseFloat(document.getElementById(`sc_d_${i}`)?.value)||0;
+  const ctot =qtd*custo;
+  const fin  =preco+desc;
+  const mk   =custo>0?fin/custo-1:0;
+  const mg   =fin>0?(fin-custo)/fin:0;
+  const sv=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
+  sv(`sc_ct_${i}`,fmtBRL(ctot));
+  sv(`sc_f_${i}`, fmtBRL(fin));
+  document.getElementById(`sc_mk_${i}`).textContent=fmtPct(mk);
+  document.getElementById(`sc_mg_${i}`).textContent=fmtPct(mg);
+  calcServicos();
+}
+function calcServicos(){
+  let totC=0,totF=0;
+  srvRows.forEach((_,i)=>{
+    const q=parseFloat(document.getElementById(`sq_${i}`)?.value)||0;
+    const c=parseFloat(document.getElementById(`sc_c_${i}`)?.value)||0;
+    const p=parseFloat(document.getElementById(`sc_p_${i}`)?.value)||0;
+    const d=parseFloat(document.getElementById(`sc_d_${i}`)?.value)||0;
+    totC+=q*c; totF+=p+d;
+  });
+  document.getElementById('stot_c').textContent=fmtBRL(totC);
+  document.getElementById('stot_f').textContent=fmtBRL(totF);
+  calcDRE();
+}
+
+// ═══════════════════════════════════════════════════════
+// DRE
+// ═══════════════════════════════════════════════════════
+const DRE_DEF=[
+  {id:'d_rb_eq',  lbl:'(+) Receita Bruta — Equipamentos', cls:'dre-rb',  nota:'Locação Calc × qtd × períodos'},
+  {id:'d_rb_srv', lbl:'(+) Receita Bruta — Serviços',     cls:'dre-rb',  nota:'Preço final dos serviços'},
+  {id:'d_rb_die', lbl:'(+) Receita Diesel',               cls:'dre-rb',  nota:'Simulação diesel (quando incluso)'},
+  {id:'d_rb_tot', lbl:'(=) RECEITA BRUTA TOTAL',          cls:'dre-tot', nota:''},
+  {id:'d_pis',    lbl:'(−) PIS/COFINS s/ Receita (9,25%)',cls:'dre-cost',nota:'Lucro Real — não-cumulativo'},
+  {id:'d_iss',    lbl:'(−) ISS / Outros (3%)',            cls:'dre-cost',nota:'Estimativa conservadora'},
+  {id:'d_rl',     lbl:'(=) RECEITA LÍQUIDA',              cls:'dre-tot', nota:''},
+  {id:'d_die_c',  lbl:'(−) CMV — Custo Diesel',          cls:'dre-cost',nota:'Calculado da simulação',
+   toggle:true, toggleId:'cmv_diesel_on'},
+  {id:'d_manut',  lbl:'(−) CMV — Manutenção (%)',         cls:'dre-cost',nota:'% editável da receita bruta',
+   pct_edit:true, pct_id:'d_manut_pct', pct_def:3},
+  {id:'d_depr',   lbl:'(−) Depreciação GG + Acessórios', cls:'dre-cost',nota:'Pro-rata no período'},
+  {id:'d_srv_c',  lbl:'(−) Custo Serviços',               cls:'dre-cost',nota:'Total custo da tabela de serviços'},
+  {id:'d_mc',     lbl:'(=) MARGEM DE CONTRIBUIÇÃO',       cls:'dre-mc',  nota:''},
+  {id:'d_adm',    lbl:'(−) Despesas Administrativas',     cls:'dre-cost',nota:'Comissões, MDO adm., etc. (padrão 15%)',
+   pct_edit:true, pct_id:'d_adm_pct', pct_def:15},
+  {id:'d_fixos',  lbl:'(−) Outros Custos Fixos (manual)', cls:'dre-cost',nota:'Overhead, aluguel base', manual:true},
+  {id:'d_ebitda', lbl:'(=) EBITDA ESTIMADO',              cls:'dre-eb',  nota:''},
+];
+
+function buildDRE(){
+  const tb=document.getElementById('tbody_dre');
+  tb.innerHTML='';
+  DRE_DEF.forEach(r=>{
+    let valCell='';
+    if(r.manual){
+      valCell=`<input type="number" step="100" id="${r.id}" oninput="calcDRE()" value="0"
+        style="text-align:right;width:140px;border:1.5px solid var(--border);border-radius:4px;padding:3px 6px;background:var(--yellow);color:#1a3a6b;font-weight:600">`;
+    } else if(r.toggle){
+      valCell=`<span id="${r.id}" style="font-weight:600">—</span>
+        <label style="font-size:10px;margin-left:6px;color:var(--muted);display:inline-flex;align-items:center;gap:3px;cursor:pointer">
+          <input type="checkbox" id="${r.toggleId}" checked onchange="calcDRE()" style="margin:0;cursor:pointer"> considerar
+        </label>`;
+    } else if(r.pct_edit){
+      valCell=`<span id="${r.id}" style="font-weight:600">—</span>
+        <label style="font-size:10px;margin-left:8px;color:var(--muted)">
+          % <input type="number" id="${r.pct_id}" value="${r.pct_def}" step="0.1" min="0"
+            style="width:48px;border:1.5px solid var(--border);border-radius:3px;padding:2px 4px;background:var(--yellow);color:#1a3a6b;font-weight:600;font-size:11px"
+            oninput="calcDRE()">
+        </label>`;
+    } else {
+      valCell=`<span id="${r.id}" style="font-weight:600">—</span>`;
+    }
+    const bold=r.cls.includes('tot')||r.cls.includes('mc')||r.cls.includes('eb');
+    tb.insertAdjacentHTML('beforeend',`
+      <tr class="${r.cls}">
+        <td style="padding:6px 12px;font-weight:${bold?700:500}">${r.lbl}</td>
+        <td class="dre-val" style="padding:6px 12px">${valCell}</td>
+        <td class="dre-pct" id="${r.id}_pct" style="padding:6px 6px"></td>
+        <td class="dre-nota" style="padding:6px 12px">${r.nota}</td>
+      </tr>`);
+  });
+}
+
+function setSpan(id,v){
+  const e=document.getElementById(id);
+  if(!e) return;
+  if(e.tagName==='SPAN') e.textContent=fmtBRL(v);
+  // Não sobrescreve inputs manuais
+}
+
+function calcDRE(){
+  // Guard: se DRE não foi construído ainda, constrói
+  if(!document.getElementById('tbody_dre') ||
+     document.getElementById('tbody_dre').children.length === 0){
+    buildDRE();
+  }
+  const per=Math.ceil(gv('i_dias')/30)||1;
+  let rbEq=0;
+  eqRows.forEach((_,i)=>{
+    rbEq+=(parseFloat(document.getElementById(`ei_loc_${i}`)?.value)||0)
+         *(parseFloat(document.getElementById(`ei_qtd_${i}`)?.value)||0)*per;
+  });
+  let rbSrv=0;
+  srvRows.forEach((_,i)=>{
+    rbSrv+=(parseFloat(document.getElementById(`sc_p_${i}`)?.value)||0)
+          +(parseFloat(document.getElementById(`sc_d_${i}`)?.value)||0);
+  });
+  let rbDiesel=0,cDiesel=0;
+  if(document.getElementById('diesel_incluso').value==='sim'){
+    // use globals set by calcDiesel() — avoids BRL re-parsing bugs
+    const venda = _vendaNum || 0;
+    const ct    = _custoDieselTotal || (gv('d_custo')+gv('d_pis'));
+    eqRows.forEach((_,i)=>{
+      const item=document.getElementById(`ei_item_${i}`)?.value||'';
+      if(!isGG(item)) return;
+      const franq=parseFloat(document.getElementById(`ei_franq_${i}`)?.value)||0;
+      const dRow=document.querySelector(`#tbody_diesel [data-row="${i}"]`);
+      if(!dRow) return;
+      const lph=parseFloat(dRow.querySelectorAll('input')[0]?.value)||0;
+      const v=lph*franq*30;
+      rbDiesel+=v*venda; cDiesel+=v*ct;
+    });
+  }
+
+  setSpan('d_rb_eq',rbEq);
+  setSpan('d_rb_srv',rbSrv);
+  setSpan('d_rb_die',rbDiesel);
+  const rbTot=rbEq+rbSrv+rbDiesel;
+  setSpan('d_rb_tot',rbTot);
+
+  const pisCof=rbTot*(-0.0925);
+  const iss=rbTot*(-0.03);
+  // Força valor mesmo se rbTot=0 (evita "—")
+  const pisCofDisplay = isNaN(pisCof) ? 0 : pisCof;
+  const issDisplay    = isNaN(iss)    ? 0 : iss;
+  setSpan('d_pis', pisCofDisplay);
+  setSpan('d_iss', issDisplay);
+  const rl=rbTot+pisCof+iss;
+  setSpan('d_rl',rl);
+
+  // CMV Diesel (toggle)
+  const dieselOn=document.getElementById('cmv_diesel_on')?.checked!==false;
+  const cDieselFinal=dieselOn?-cDiesel:0;
+  setSpan('d_die_c',cDieselFinal);
+
+  // Manutenção %
+  const mPct=(parseFloat(document.getElementById('d_manut_pct')?.value)||3)/100;
+  const manut=rbTot*(-mPct);
+  setSpan('d_manut',manut);
+
+  // Depreciação
+  let totDepr=0;
+  eqRows.forEach((_,i)=>{
+    const capex=parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+    const qtd=parseFloat(document.getElementById(`ei_qtd_${i}`)?.value)||0;
+    const dR=isGG(document.getElementById(`ei_item_${i}`)?.value||'')?(gv('i_depr_gg')/100):(gv('i_depr_ac')/100);
+    totDepr+=capex*(dR/12)*per*qtd;
+  });
+  setSpan('d_depr',-totDepr);
+
+  // Custo serviços (auto)
+  let totSrvC=0;
+  srvRows.forEach((_,i)=>{
+    totSrvC+=(parseFloat(document.getElementById(`sq_${i}`)?.value)||0)
+            *(parseFloat(document.getElementById(`sc_c_${i}`)?.value)||0);
+  });
+  setSpan('d_srv_c',-totSrvC);
+
+  const mc=rl+cDieselFinal+manut+(-totDepr)+(-totSrvC);
+  setSpan('d_mc',mc);
+
+  // Despesas Adm %
+  const admPct=(parseFloat(document.getElementById('d_adm_pct')?.value)||15)/100;
+  const adm=rbTot*(-admPct);
+  setSpan('d_adm',adm);
+
+  const fixos=parseFloat(document.getElementById('d_fixos')?.value)||0;
+  const ebitda=mc+adm-fixos;
+  setSpan('d_ebitda',ebitda);
+
+  // % receita bruta
+  DRE_DEF.forEach(r=>{
+    const pEl=document.getElementById(r.id+'_pct');
+    if(!pEl) return;
+    const e=document.getElementById(r.id);
+    if(!e) return;
+    let v=0;
+    if(e.tagName==='INPUT') v=parseFloat(e.value)||0;
+    else if(e.tagName==='SPAN'){
+      const t=e.textContent.replace(/[R$\s.]/g,'').replace(',','.');
+      v=parseFloat(t)||0;
+    }
+    pEl.textContent=rbTot>0?fmtPct(v/rbTot):'—';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// calcAll
+// ═══════════════════════════════════════════════════════
+function calcAll(){
+  const dias=gv('i_dias');
+  const perEl=document.getElementById('i_periodos');
+  if(perEl) perEl.value=Math.ceil(dias/30)||1;
+  // Garante que tabelas foram construídas
+  if(!document.getElementById('tbody_eq')||document.getElementById('tbody_eq').children.length===0) buildEquip();
+  if(!document.getElementById('tbody_srv')||document.getElementById('tbody_srv').children.length===0) buildSrv();
+  if(!document.getElementById('tbody_dre')||document.getElementById('tbody_dre').children.length===0) buildDRE();
+  eqRows.forEach((_,i)=>calcEquipRow(i));
+  srvRows.forEach((_,i)=>calcSrv(i));
+  calcDiesel();
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORT XLSX
+// ═══════════════════════════════════════════════════════
+function exportXLSX(){
+  // ── Lê dados do HTML ──────────────────────────────────────────────
+  const per   = Math.ceil(gv('i_dias')/30)||1;
+  const dGG   = gv('i_depr_gg')/100;
+  const dAC   = gv('i_depr_ac')/100;
+  const yAlvo = gv('i_yield_alvo')/100;
+  const cliente = document.getElementById('i_cliente').value||'';
+  const obra    = document.getElementById('i_obra').value||'';
+  const cotacao = document.getElementById('i_cotacao').value||'';
+  const data    = document.getElementById('i_data').value||'';
+  const dias    = gv('i_dias');
+
+  // ── Estilos reutilizáveis ─────────────────────────────────────────
+  const C_ORANGE = 'FFE8630A', C_DARK = 'FF1F2937', C_YELLOW = 'FFFFFF00';
+  const C_BLUE   = 'FFDDEEFF', C_F2   = 'FFF2F2F2', C_WHITE  = 'FFFFFFFF';
+  const C_GPOS   = 'FFE8F5E9', C_YTOT = 'FFFFF9C4', C_LIQD   = 'FFB3E5FC';
+  const C_NEG    = 'FFFFEBEE', C_MC   = 'FFB3E5FC', C_EB     = 'FFC8E6C9';
+  const C_LEGND  = 'FFF0F0F0', C_NOTA = 'FFF8F8F8';
+
+  const fOrange = {bold:true, color:{rgb:'FFFFFFFF'}, sz:10, name:'Arial'};
+  const fDark   = {bold:true, color:{rgb:'FFFFFFFF'}, sz:10, name:'Arial'};
+  const fYellow = {bold:true, color:{rgb:'FF0000FF'}, sz:10, name:'Arial'};
+  const fBlue   = {color:{rgb:'FF000000'}, sz:10, name:'Arial'};
+  const fBold   = {bold:true, color:{rgb:'FF000000'}, sz:10, name:'Arial'};
+  const fSm     = {italic:true, color:{rgb:'FF666666'}, sz:8, name:'Arial'};
+  const fHdr    = {bold:true, color:{rgb:'FFFFFFFF'}, sz:9, name:'Arial'};
+  const fHdrBig = {bold:true, color:{rgb:'FFFFFFFF'}, sz:11, name:'Arial'};
+  const fTitle  = {bold:true, color:{rgb:'FFFFFFFF'}, sz:13, name:'Arial'};
+
+  const BRL = '#,##0.00';
+  const PCT = '0.00%';
+  const PCT1= '0.0%';
+
+  // ── SheetJS helpers ───────────────────────────────────────────────
+  const WB = XLSX.utils.book_new();
+  const WS = {};
+
+  function sc(r,c,v,s){
+    const addr=XLSX.utils.encode_cell({r,c});
+    WS[addr]={v:v, t: typeof v==='number'?'n': typeof v==='string'&&v[0]==='='?'f':'s'};
+    if(typeof v==='string'&&v[0]==='='){WS[addr].t='f';WS[addr].f=v.slice(1);WS[addr].v=0;}
+    if(s){
+      WS[addr].s={};
+      if(s.fill) WS[addr].s.fill={patternType:'solid',fgColor:{rgb:s.fill}};
+      if(s.font) WS[addr].s.font=s.font;
+      if(s.align) WS[addr].s.alignment=s.align;
+      if(s.numFmt) WS[addr].s.numFmt=s.numFmt;
+      if(s.border) WS[addr].s.border=s.border;
+    }
+    return WS[addr];
+  }
+
+  const thin = {top:{style:'thin',color:{rgb:'FFCCCCCC'}},bottom:{style:'thin',color:{rgb:'FFCCCCCC'}},left:{style:'thin',color:{rgb:'FFCCCCCC'}},right:{style:'thin',color:{rgb:'FFCCCCCC'}}};
+  const aR={horizontal:'right',vertical:'center'};
+  const aC={horizontal:'center',vertical:'center'};
+  const aL={horizontal:'left',vertical:'center'};
+  const aW={horizontal:'left',vertical:'center',wrapText:true};
+  const aWC={horizontal:'center',vertical:'center',wrapText:true};
+
+  // Merges list
+  const merges=[];
+  function merge(rs,cs,re,ce){ merges.push({s:{r:rs,c:cs},e:{r:re,c:ce}}); }
+
+  // ── ROW 1 — Título ─────────────────────────────────────────────────
+  sc(0,0,'TECNOGERA  |  RACIONAL DE PRECIFICAÇÃO',
+    {fill:C_ORANGE,font:fTitle,align:aC});
+  merge(0,0,0,12);
+
+  // ── ROW 2 — Cliente/Cotação/Data ───────────────────────────────────
+  sc(1,1,'CLIENTE / OBRA:',{fill:C_DARK,font:fHdr,align:{horizontal:'right',vertical:'center'}});
+  sc(1,2,`${cliente} / ${obra}`,{fill:C_YELLOW,font:fYellow,align:aL}); merge(1,2,1,4);
+  sc(1,5,'COTAÇÃO Nº:',{fill:C_DARK,font:fHdr,align:{horizontal:'right',vertical:'center'}});
+  sc(1,6,cotacao,{fill:C_YELLOW,font:fYellow,align:aL}); merge(1,6,1,7);
+  sc(1,8,'DATA:',{fill:C_DARK,font:fHdr,align:{horizontal:'right',vertical:'center'}});
+  sc(1,9,data,{fill:C_YELLOW,font:fYellow,align:aL}); merge(1,9,1,10);
+
+  // ── ROW 3 — Período/Yield/Depr ────────────────────────────────────
+  sc(2,1,'PERÍODO (dias):',{fill:C_DARK,font:fHdr,align:{horizontal:'right',vertical:'center'}});
+  sc(2,2,dias,{fill:C_YELLOW,font:fYellow,align:aC,numFmt:'#,##0'});
+  sc(2,3,'=CEILING(C3/30,1)',{fill:C_BLUE,font:fBlue,align:aC,numFmt:'#,##0'});
+  sc(2,4,'YIELD ALVO (%/mês):',{fill:C_DARK,font:fHdr,align:{horizontal:'right',vertical:'center'}});
+  sc(2,5,yAlvo,{fill:C_YELLOW,font:fYellow,align:aC,numFmt:PCT});
+  sc(2,6,'DEPR. GG (% a.a.):',{fill:C_DARK,font:fHdr,align:{horizontal:'right',vertical:'center'}});
+  sc(2,7,dGG,{fill:C_YELLOW,font:fYellow,align:aC,numFmt:PCT});
+  sc(2,8,'DEPR. ACESS. (% a.a.):',{fill:C_DARK,font:fHdr,align:{horizontal:'right',vertical:'center'}});
+  sc(2,9,dAC,{fill:C_YELLOW,font:fYellow,align:aC,numFmt:PCT});
+
+  // ── ROW 4 — Separador laranja ─────────────────────────────────────
+  for(let c=0;c<13;c++) sc(3,c,'',{fill:C_ORANGE});
+  merge(3,0,3,12);
+
+  // ── ROW 5 — vazia ─────────────────────────────────────────────────
+
+  // ── ROW 6 — Legenda cores ─────────────────────────────────────────
+  sc(5,1,'',{fill:C_YELLOW,border:thin});
+  sc(5,2,'Input (editável)',{font:fSm,align:aL}); merge(5,2,5,3);
+  sc(5,4,'',{fill:C_BLUE,border:thin});
+  sc(5,5,'Fórmula automática (não modificar)',{font:fSm,align:aL}); merge(5,5,5,7);
+  sc(5,8,'',{fill:C_GPOS,border:thin});
+  sc(5,9,'Resultado positivo',{font:fSm,align:aL}); merge(5,9,5,10);
+  sc(5,11,'',{fill:C_NEG,border:thin});
+  sc(5,12,'Custo / Alerta',{font:fSm,align:aL});
+
+  // ── ROW 7 — vazia ─────────────────────────────────────────────────
+
+  // ── ROW 8 — Header equipamentos ───────────────────────────────────
+  const eqHdrs=['#','ITEM / EQUIPAMENTO','QTD','CAPEX\nUnit (R$)','CAPEX\nTotal (R$)',
+    'YIELD\n(%/mês)','LOCAÇÃO\nCalc (R$)','PREÇO\nSistema (R$)','DESC/\nExtra (R$)',
+    'DESC\n%','PREÇO\nFinal (R$)','TOTAL\nPeríodo (R$)','DEPRECIAÇÃO\n(R$)'];
+  eqHdrs.forEach((h,c)=>sc(7,c,h,{fill:C_DARK,font:fHdr,align:aWC,border:thin}));
+
+  // ── ROWS 9–18 — Linhas equipamentos ──────────────────────────────
+  const EQ_START=9; // 1-indexed Excel row
+  const nEq = eqRows.length;
+
+  eqRows.forEach((d,i)=>{
+    const R=EQ_START+i;  // Excel row 1-indexed
+    const r=R-1;         // 0-indexed for sc()
+    const bg = i%2===0 ? C_WHITE : C_F2;
+
+    const item  = document.getElementById(`ei_item_${i}`)?.value||'';
+    const qtd   = parseFloat(document.getElementById(`ei_qtd_${i}`)?.value)||0;
+    const capex = parseFloat(document.getElementById(`ei_capex_${i}`)?.value)||0;
+    const yld   = parseFloat(document.getElementById(`ei_yield_${i}`)?.value)||0;
+    const sist  = parseFloat(document.getElementById(`ei_sist_${i}`)?.value)||0;
+
+    sc(r,0,i+1,         {fill:bg,font:{color:{rgb:'FF888888'},sz:10,name:'Arial'},align:aC,border:thin});
+    sc(r,1,item,        {fill:C_YELLOW,font:fYellow,align:aW,border:thin});
+    sc(r,2,qtd,         {fill:C_YELLOW,font:fYellow,align:aC,border:thin,numFmt:'#,##0'});
+    sc(r,3,capex,       {fill:C_YELLOW,font:fYellow,align:aR,border:thin,numFmt:BRL});
+    sc(r,4,`=D${R}*C${R}`,{fill:C_BLUE,font:fBlue,align:aR,border:thin,numFmt:BRL});
+    sc(r,5,yld/100,     {fill:C_YELLOW,font:{bold:true,color:{rgb:'FF0000FF'},sz:10,name:'Arial'},align:aC,border:thin,numFmt:PCT});
+    sc(r,6,`=IF(AND(D${R}<>"",F${R}<>""),D${R}*F${R},"")`,{fill:C_BLUE,font:fBlue,align:aR,border:thin,numFmt:BRL});
+    sc(r,7,sist,        {fill:C_YELLOW,font:fYellow,align:aR,border:thin,numFmt:BRL});
+    sc(r,8,`=IF(G${R}="","",G${R}-H${R})`,{fill:C_BLUE,font:fBlue,align:aR,border:thin,numFmt:BRL});
+    sc(r,9,`=IF(OR(H${R}=0,H${R}=""),"",I${R}/H${R})`,{fill:C_BLUE,font:fBlue,align:aC,border:thin,numFmt:PCT});
+    sc(r,10,`=IF(G${R}="","",G${R})`,{fill:C_BLUE,font:fBold,align:aR,border:thin,numFmt:BRL});
+    sc(r,11,`=IF(K${R}="","",K${R}*C${R}*$D$3)`,{fill:C_BLUE,font:fBold,align:aR,border:thin,numFmt:BRL});
+    sc(r,12,`=IF(D${R}="","",D${R}*IF(NOT(ISERROR(SEARCH("Gerador",B${R}))),$H$3,$J$3)/12*$D$3*C${R})`,
+      {fill:C_BLUE,font:fBlue,align:aR,border:thin,numFmt:BRL});
+  });
+
+  // ── ROW 19 (EQ_END+1) — TOTAL EQUIPAMENTOS ───────────────────────
+  const EQ_END = EQ_START + nEq - 1;
+  const ETOT   = EQ_END + 1;
+  const et     = ETOT - 1; // 0-indexed
+
+  for(let c=0;c<13;c++) sc(et,c,'',{fill:C_ORANGE,font:fOrange,border:thin});
+  sc(et,0,'TOTAL EQUIPAMENTOS',{fill:C_ORANGE,font:fOrange,align:aL,border:thin});
+  sc(et,4,`=SUM(E${EQ_START}:E${EQ_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+  sc(et,5,`=IF(SUM(E${EQ_START}:E${EQ_END})=0,"",SUM(K${EQ_START}:K${EQ_END})/SUM(E${EQ_START}:E${EQ_END}))`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:PCT});
+  sc(et,6,`=SUM(G${EQ_START}:G${EQ_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+  sc(et,7,`=SUM(H${EQ_START}:H${EQ_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+  sc(et,8,`=SUM(I${EQ_START}:I${EQ_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+  sc(et,9,`=IF(H${ETOT}=0,"",I${ETOT}/H${ETOT})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:PCT});
+  sc(et,11,`=SUM(L${EQ_START}:L${EQ_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+  sc(et,12,`=SUM(M${EQ_START}:M${EQ_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+
+  // ── ROW ETOT+1 — Labels totais ────────────────────────────────────
+  const el = et+1;
+  const fLbl={italic:true,sz:8,color:{rgb:'FF666666'},name:'Arial'};
+  [['E','CAPEX Total'],['F','Yield Médio'],['G','Loc. Mensal Total'],
+   ['I','Desc/Extra Total'],['L','Total Período'],['M','Depreciação Total']
+  ].forEach(([col,lbl])=>{
+    const c=col.charCodeAt(0)-65;
+    sc(el,c,lbl,{fill:C_LEGND,font:fLbl,align:aR});
+  });
+
+  // ── ROW ETOT+2 — vazia ────────────────────────────────────────────
+
+  // ── SERVIÇOS ──────────────────────────────────────────────────────
+  const SRV_HDR_ROW = ETOT + 2;  // seção header
+  const SRV_COL_ROW = SRV_HDR_ROW + 1;
+  const SRV_START   = SRV_COL_ROW + 1;
+
+  const sh = SRV_HDR_ROW - 1; // 0-indexed
+  for(let c=0;c<13;c++) sc(sh,c,'',{fill:C_DARK});
+  sc(sh,0,'  SERVIÇOS / MOBILIZAÇÃO',{fill:C_DARK,font:{bold:true,color:{rgb:'FFFFFFFF'},sz:11,name:'Arial'},align:aL});
+  merge(sh,0,sh,12);
+
+  const scolH=['#','SERVIÇO','OBSERVAÇÃO','QTD','CUSTO\nUnit (R$)','CUSTO\nTotal (R$)',
+    'PREÇO\nCobrado (R$)','DESC/\nExtra (R$)','PREÇO\nFinal (R$)','MARKUP','MARGEM'];
+  scolH.forEach((h,c)=>sc(SRV_COL_ROW-1,c,h,{fill:C_DARK,font:fHdr,align:aWC,border:thin}));
+
+  const nSrv = srvRows.length;
+  srvRows.forEach((d,i)=>{
+    const R=SRV_START+i;
+    const r=R-1;
+    const bg=i%2===0?C_WHITE:C_F2;
+    const qtd  =parseFloat(document.getElementById(`sq_${i}`)?.value)||0;
+    const custo=parseFloat(document.getElementById(`sc_c_${i}`)?.value)||0;
+    const preco=parseFloat(document.getElementById(`sc_p_${i}`)?.value)||0;
+    const desc =parseFloat(document.getElementById(`sc_d_${i}`)?.value)||0;
+    const srv  =document.getElementById(`sc_srv_${i}`)?.value||'';
+    const obs  =document.getElementById(`sc_obs_${i}`)?.value||'';
+
+    sc(r,0,i+1,   {fill:bg,font:{color:{rgb:'FF888888'},sz:10,name:'Arial'},align:aC,border:thin});
+    sc(r,1,srv,   {fill:bg,font:{sz:10,name:'Arial'},align:aL,border:thin});
+    sc(r,2,obs,   {fill:C_YELLOW,font:fYellow,align:aL,border:thin});
+    sc(r,3,qtd,   {fill:C_YELLOW,font:fYellow,align:aC,border:thin});
+    sc(r,4,custo, {fill:C_YELLOW,font:fYellow,align:aR,border:thin,numFmt:BRL});
+    sc(r,5,`=D${R}*E${R}`,{fill:C_BLUE,font:fBlue,align:aR,border:thin,numFmt:BRL});
+    sc(r,6,preco, {fill:C_YELLOW,font:fYellow,align:aR,border:thin,numFmt:BRL});
+    sc(r,7,desc,  {fill:C_YELLOW,font:fYellow,align:aR,border:thin,numFmt:BRL});
+    sc(r,8,`=G${R}+H${R}`,{fill:C_BLUE,font:fBold,align:aR,border:thin,numFmt:BRL});
+    sc(r,9,`=IF(E${R}=0,"",I${R}/E${R}-1)`,{fill:C_BLUE,font:fBlue,align:aC,border:thin,numFmt:PCT1});
+    sc(r,10,`=IF(I${R}=0,"",(I${R}-E${R})/I${R})`,{fill:C_BLUE,font:fBlue,align:aC,border:thin,numFmt:PCT1});
+  });
+
+  const SRV_END = SRV_START + nSrv - 1;
+  const SRV_TOT = SRV_END + 1;
+  const stot    = SRV_TOT - 1;
+
+  for(let c=0;c<11;c++) sc(stot,c,'',{fill:C_ORANGE,font:fOrange,border:thin});
+  sc(stot,0,'TOTAL SERVIÇOS',{fill:C_ORANGE,font:fOrange,align:aL,border:thin});
+  merge(stot,0,stot,4);
+  sc(stot,5,`=SUM(F${SRV_START}:F${SRV_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+  sc(stot,8,`=SUM(I${SRV_START}:I${SRV_END})`,{fill:C_ORANGE,font:fOrange,align:aR,border:thin,numFmt:BRL});
+
+  // ── DRE ──────────────────────────────────────────────────────────
+  const DRE_SEC = SRV_TOT + 2;
+  const DRE_HDR = DRE_SEC + 1;
+  const DRE_S   = DRE_HDR + 1;
+
+  const ds = DRE_SEC - 1;
+  for(let c=0;c<13;c++) sc(ds,c,'',{fill:C_DARK});
+  sc(ds,0,'  DRE SIMPLIFICADA — ANÁLISE DE RENTABILIDADE',
+    {fill:C_DARK,font:{bold:true,color:{rgb:'FFFFFFFF'},sz:12,name:'Arial'},align:aL});
+  merge(ds,0,ds,12);
+
+  const dh=DRE_HDR-1;
+  sc(dh,0,'LINHA DRE',{fill:C_DARK,font:fHdr,align:aL}); merge(dh,0,dh,3);
+  sc(dh,4,'R$ (Período)',{fill:C_DARK,font:fHdr,align:aC}); merge(dh,4,dh,6);
+  sc(dh,7,'% Rec. Bruta',{fill:C_DARK,font:fHdr,align:aC});
+  sc(dh,9,'Notas',{fill:C_DARK,font:{color:{rgb:'FF9CA3AF'},sz:9,name:'Arial'},align:aL}); merge(dh,9,dh,12);
+
+  // Helper para linha DRE
+  function drow(offset,lbl,fml,bg,bold,nota,manual){
+    const R=DRE_S+offset; const r=R-1;
+    const fn={bold:bold,color:{rgb:'FF000000'},sz:10,name:'Arial'};
+    sc(r,0,lbl,{fill:bg,font:fn,align:aL,border:thin}); merge(r,0,r,3);
+    if(manual){
+      const rbd_diesel = document.getElementById('diesel_incluso').value==='sim'
+        ? (_vendaNum||0) : 0;
+      const val = lbl.includes('Diesel')&&lbl.includes('Receita') ? rbd_diesel
+               : lbl.includes('CMV')&&lbl.includes('Diesel') ? -(_custoDieselTotal||0)
+               : lbl.includes('Fixos') ? (parseFloat(document.getElementById('d_fixos')?.value)||0)
+               : 0;
+      sc(r,4,val,{fill:C_YELLOW,font:{bold:true,color:{rgb:'FF0000FF'},sz:10,name:'Arial'},align:aR,border:thin,numFmt:BRL});
+    } else {
+      sc(r,4,fml,{fill:bg,font:{bold:bold,color:{rgb:'FF000000'},sz:10,name:'Arial'},align:aR,border:thin,numFmt:BRL});
+    }
+    merge(r,4,r,6);
+    sc(r,7,`=IF(E${DRE_S+3}=0,"",E${R}/E${DRE_S+3})`,{fill:bg,font:{sz:9,color:{rgb:'FF555555'},name:'Arial'},align:aR,border:thin,numFmt:PCT});
+    sc(r,9,nota||'',{fill:C_NOTA,font:fSm,align:aL,border:thin}); merge(r,9,r,12);
+  }
+
+  // RB = DRE_S; ajuste absoluto para fórmulas
+  const R_RB_EQ  = DRE_S;
+  const R_RB_SRV = DRE_S+1;
+  const R_RB_DIE = DRE_S+2;
+  const R_RB_TOT = DRE_S+3;
+  const R_PIS    = DRE_S+4;
+  const R_ISS    = DRE_S+5;
+  const R_RL     = DRE_S+6;
+  const R_DIEC   = DRE_S+7;
+  const R_MAN    = DRE_S+8;
+  const R_DEPR   = DRE_S+9;
+  const R_MC     = DRE_S+10;
+  const R_ADM    = DRE_S+11;
+  const R_SRVC   = DRE_S+12;
+  const R_EBIT   = DRE_S+13;
+
+  drow(0, '(+) Receita Bruta — Equipamentos', `=L${ETOT}`,       C_GPOS, false, 'Locação Calc × QTD × Períodos');
+  drow(1, '(+) Receita Bruta — Serviços',     `=I${SRV_TOT}`,    C_GPOS, false, 'Preço final dos serviços');
+  drow(2, '(+) Receita Diesel (manual)',       '',                C_GPOS, false, 'Preencher quando diesel incluso', true);
+  drow(3, '(=) RECEITA BRUTA TOTAL',           `=E${R_RB_EQ}+E${R_RB_SRV}+E${R_RB_DIE}`, C_YTOT, true, '');
+  drow(4, '(−) PIS/COFINS s/ Receita (9,25%)',`=E${R_RB_TOT}*(-0.0925)`, C_NEG, false, 'Lucro Real — não-cumulativo');
+  drow(5, '(−) ISS / Outros (3%)',             `=E${R_RB_TOT}*(-0.03)`,  C_NEG, false, 'Estimativa conservadora');
+  drow(6, '(=) RECEITA LÍQUIDA',               `=E${R_RB_TOT}+E${R_PIS}+E${R_ISS}`, C_LIQD, true, '');
+  drow(7, '(−) CMV — Custo Diesel (manual)',   '',                C_NEG, false, 'Custo de compra do diesel', true);
+  drow(8, '(−) CMV — Manutenção',              `=E${R_RB_TOT}*(-0.03)`,  C_NEG, false, 'Estimativa 3% da Receita Bruta');
+  drow(9, '(−) Depreciação GG + Acessórios',  `=-M${ETOT}`,     C_NEG, false, 'Pro-rata no período (GG 10% a.a. / Acess. 20% a.a.)');
+  drow(10,'(=) MARGEM DE CONTRIBUIÇÃO',        `=E${R_RL}+E${R_DIEC}+E${R_MAN}+E${R_DEPR}`, C_MC, true, '');
+  drow(11,'(−) Despesas Administrativas (15%)',`=E${R_RB_TOT}*(-0.15)`,  C_NEG, false, 'Comissões, MDO adm., etc.');
+  drow(12,'(−) Custo Serviços (total tabela)', `=-(F${SRV_TOT})`,C_NEG, false, 'Total custo da tabela de serviços');
+  drow(13,'(=) EBITDA ESTIMADO',               `=E${R_MC}+E${R_ADM}+E${R_SRVC}`, 'FFC8E6C9', true, '');
+
+  // ── Legenda final ─────────────────────────────────────────────────
+  const R_LEG = R_EBIT + 2;
+  sc(R_LEG-1,0,'LEGENDA: Amarelo = Input manual (editável)  |  Azul claro = Fórmula automática  |  Yield em amarelo = editável pelo gestor',
+    {fill:C_LEGND,font:fSm,align:aC});
+  merge(R_LEG-1,0,R_LEG-1,12);
+
+  // ── Dimensões (fiéis ao template aprovado) ────────────────────────
+  WS['!cols']=[
+    {wpx:28},{wpx:167},{wpx:107},{wpx:76},{wpx:136},{wpx:88},{wpx:115},
+    {wpx:86},{wpx:144},{wpx:61},{wpx:69},{wpx:83},{wpx:110}
+  ];
+
+  // Alturas de linha (fiéis ao template)
+  WS['!rows']=[];
+  const rowHeights={
+    0:31.5, 1:19.5, 2:19.5, 3:24.75, 4:6, 5:15.75, 6:3.75, 7:36
+  };
+  // eq rows
+  for(let i=0;i<nEq;i++) rowHeights[EQ_START-1+i]=i===0?19.5:19.5;
+  rowHeights[ETOT-1]=21.75; rowHeights[ETOT]=13.5;
+  rowHeights[SRV_HDR_ROW-1]=27.75; rowHeights[SRV_COL_ROW-1]=30;
+  for(let i=0;i<nSrv;i++) rowHeights[SRV_START-1+i]=19.5;
+  rowHeights[SRV_TOT-1]=21.75;
+  rowHeights[DRE_SEC-1]=27.75; rowHeights[DRE_HDR-1]=19.5;
+  for(let i=0;i<14;i++) rowHeights[DRE_S-1+i]=19.5;
+  rowHeights[R_LEG-1]=13.5;
+  for(let r=0;r<=R_LEG;r++) WS['!rows'].push(rowHeights[r]?{hpt:rowHeights[r]}:{});
+
+  WS['!merges'] = merges;
+  WS['!ref'] = XLSX.utils.encode_range({s:{r:0,c:0},e:{r:R_LEG,c:12}});
+
+  XLSX.utils.book_append_sheet(WB, WS, 'RACIONAL');
+
+  const cl = cliente||'Racional';
+  const dt = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+  XLSX.writeFile(WB, `Racional_${cl}_${dt}.xlsx`);
+}
+
+// ═══════════════════════════════════════════════════════
+// DETECÇÃO iOS SAFARI + ABRIR NO CHROME
+// ═══════════════════════════════════════════════════════
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isChrome(){
+  return /CriOS/.test(navigator.userAgent);  // Chrome no iOS usa CriOS
+}
+function isSafariIOS(){
+  return isIOS() && !isChrome() &&
+    /WebKit/.test(navigator.userAgent) &&
+    !/Chrome/.test(navigator.userAgent);
+}
+function openInChrome(){
+  // Pega a URL atual do arquivo
+  const url = window.location.href;
+  // Esquema de URL do Chrome iOS
+  // googlechrome:// abre URLs http/https
+  // Para arquivos locais (file://) usa x-callback
+  if(url.startsWith('file://')){
+    // Arquivo local: não tem como passar diretamente
+    // Mostra instruções manuais
+    document.getElementById('chrome-banner-msg').innerHTML =
+      '<b>Como abrir no Chrome:</b>' +
+      '<span>1. Vá ao app Arquivos &nbsp;2. Pressione e segure o arquivo &nbsp;3. Toque em "Abrir com" → Chrome</span>';
+    document.getElementById('chrome-banner-btn').style.display='none';
+  } else {
+    // URL online: redireciona direto para o Chrome
+    const chromeUrl = url.replace('https://','googlechrome://').replace('http://','googlechrome://');
+    window.location.href = chromeUrl;
+    // Fallback: se não abrir em 1.5s, tenta x-callback-url
+    setTimeout(()=>{
+      window.location.href = 'googlechromes://' + url.replace(/^https?:\/\//,'');
+    }, 1500);
+  }
+}
+function dismissChromeBanner(){
+  document.getElementById('chrome-banner').classList.remove('show');
+  document.body.classList.remove('has-banner');
+  // Guarda preferência por 24h
+  try{ sessionStorage.setItem('chrome_banner_dismissed','1'); }catch(e){}
+}
+function initChromeBanner(){
+  // Só mostra no Safari do iOS, não no Chrome, não no desktop
+  if(!isSafariIOS()) return;
+  // Verifica se foi dispensado nesta sessão
+  try{ if(sessionStorage.getItem('chrome_banner_dismissed')) return; }catch(e){}
+  document.getElementById('chrome-banner').classList.add('show');
+  document.body.classList.add('has-banner');
+}
+
+// ═══════════════════════════════════════════════════════
+// SALVAR / CARREGAR RACIONAL (.json)
+// ═══════════════════════════════════════════════════════
+function collectData(){
+  return {
+    version: 2,
+    savedAt: new Date().toISOString(),
+    header: {
+      cliente:   document.getElementById('i_cliente')?.value||'',
+      obra:      document.getElementById('i_obra')?.value||'',
+      cotacao:   document.getElementById('i_cotacao')?.value||'',
+      data:      document.getElementById('i_data')?.value||'',
+      dias:      document.getElementById('i_dias')?.value||'30',
+      yield_alvo:document.getElementById('i_yield_alvo')?.value||'10',
+      depr_gg:   document.getElementById('i_depr_gg')?.value||'10',
+      depr_ac:   document.getElementById('i_depr_ac')?.value||'20',
+    },
+    diesel: {
+      incluso: document.getElementById('diesel_incluso')?.value||'nao',
+      custo:   document.getElementById('d_custo')?.value||'',
+      pis:     document.getElementById('d_pis')?.value||'',
+      markup:  document.getElementById('d_markup')?.value||'',
+      franquia:document.getElementById('d_franquia')?.value||'',
+    },
+    equipamentos: eqRows.map((_,i)=>({
+      cat:   document.getElementById(`ei_cat_${i}`)?.value||'',
+      item:  document.getElementById(`ei_item_${i}`)?.value||'',
+      qtd:   document.getElementById(`ei_qtd_${i}`)?.value||'',
+      franq: document.getElementById(`ei_franq_${i}`)?.value||'',
+      capex: document.getElementById(`ei_capex_${i}`)?.value||'',
+      yield: document.getElementById(`ei_yield_${i}`)?.value||'',
+      loc:   document.getElementById(`ei_loc_${i}`)?.value||'',
+      sist:  document.getElementById(`ei_sist_${i}`)?.value||'',
+      manual:eqRows[i]?._manual||false,
+    })),
+    servicos: srvRows.map((_,i)=>({
+      cat:  document.getElementById(`sc_cat_${i}`)?.value||'',
+      srv:  document.getElementById(`sc_srv_${i}`)?.value||'',
+      obs:  document.getElementById(`sc_obs_${i}`)?.value||'',
+      qtd:  document.getElementById(`sq_${i}`)?.value||'',
+      custo:document.getElementById(`sc_c_${i}`)?.value||'',
+      preco:document.getElementById(`sc_p_${i}`)?.value||'',
+      desc: document.getElementById(`sc_d_${i}`)?.value||'0',
+    })),
+    dre_manual: {
+      manut_pct:     document.getElementById('d_manut_pct')?.value||'3',
+      adm_pct:       document.getElementById('d_adm_pct')?.value||'15',
+      fixos:         document.getElementById('d_fixos')?.value||'0',
+      cmv_diesel_on: document.getElementById('cmv_diesel_on')?.checked!==false,
+    }
+  };
+}
+
+function saveRacional(){
+  const data    = collectData();
+  const json    = JSON.stringify(data);
+  const cliente = data.header.cliente||'Racional';
+  const dt      = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+
+  // Pega o HTML atual da página
+  const src = document.documentElement.outerHTML;
+
+  // Injeta os dados como script no <head> — será lido no DOMContentLoaded
+  const tag     = `<script id="__saved_data__" type="application/json">${json}<\/script>`;
+  const htmlOut = src.replace('</head>', tag + '</head>');
+
+  const blob = new Blob([htmlOut], {type:'text/html;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `Racional_${cliente}_${dt}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast('Racional salvo como HTML — abra direto no navegador!', '#059669');
+}
+
+function loadRacional(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      let raw = e.target.result;
+      // Suporte a .html salvo — extrai o JSON do script embutido
+      if(file.name.endsWith('.html')||raw.trimStart().startsWith('<')){
+        const match = raw.match(/<script[^>]*id="__saved_data__"[^>]*>([\s\S]*?)<\/script>/);
+        if(!match) throw new Error('HTML sem dados salvos — use um arquivo gerado pelo botão Salvar.');
+        raw = match[1];
+      }
+      const data = JSON.parse(raw);
+      if(!data.version) throw new Error('Arquivo inválido');
+
+      // Header
+      const h = data.header||{};
+      const setVal = (id,v) => { const el=document.getElementById(id); if(el) el.value=v; };
+      setVal('i_cliente',   h.cliente||'');
+      setVal('i_obra',      h.obra||'');
+      setVal('i_cotacao',   h.cotacao||'');
+      setVal('i_data',      h.data||'');
+      setVal('i_dias',      h.dias||'30');
+      setVal('i_yield_alvo',h.yield_alvo||'10');
+      setVal('i_depr_gg',   h.depr_gg||'10');
+      setVal('i_depr_ac',   h.depr_ac||'20');
+
+      // Diesel
+      const d = data.diesel||{};
+      setVal('diesel_incluso', d.incluso||'nao');
+      setVal('d_custo',   d.custo||'');
+      setVal('d_pis',     d.pis||'');
+      setVal('d_markup',  d.markup||'');
+      setVal('d_franquia',d.franquia||'');
+      toggleDiesel();
+
+      // Equipamentos
+      const eqs = data.equipamentos||[];
+      eqRows = eqs.map(e=>({
+        cat:e.cat||'', item:e.item||'', qtd:parseFloat(e.qtd)||1,
+        franq:parseFloat(e.franq)||0, capex:parseFloat(e.capex)||0,
+        yield_pct:parseFloat(e.yield)||0, preco:parseFloat(e.sist)||0,
+        _manual:e.manual||false
+      }));
+      buildEquip();
+      // Restore loc/yield values after buildEquip
+      eqs.forEach((eq,i)=>{
+        const yEl=document.getElementById(`ei_yield_${i}`);
+        const lEl=document.getElementById(`ei_loc_${i}`);
+        if(yEl&&eq.yield) yEl.value=eq.yield;
+        if(lEl&&eq.loc)   lEl.value=eq.loc;
+      });
+
+      // Serviços
+      const srvs = data.servicos||[];
+      srvRows = srvs.map(s=>({
+        cat:s.cat||'', srv:s.srv||'', obs:s.obs||'',
+        qtd:parseFloat(s.qtd)||1, custo:parseFloat(s.custo)||0,
+        preco:parseFloat(s.preco)||0
+      }));
+      buildSrv();
+      // Restore obs/desc
+      srvs.forEach((sv,i)=>{
+        const oEl=document.getElementById(`sc_obs_${i}`);
+        const dEl=document.getElementById(`sc_d_${i}`);
+        if(oEl) oEl.value=sv.obs||'';
+        if(dEl) dEl.value=sv.desc||'0';
+      });
+
+      // DRE manual
+      const dm = data.dre_manual||{};
+      if(dm.manut_pct){ const el=document.getElementById('d_manut_pct'); if(el) el.value=dm.manut_pct; }
+      if(dm.adm_pct)  { const el=document.getElementById('d_adm_pct');   if(el) el.value=dm.adm_pct; }
+      if(dm.fixos)    { const el=document.getElementById('d_fixos');      if(el) el.value=dm.fixos; }
+      const cbk=document.getElementById('cmv_diesel_on');
+      if(cbk) cbk.checked=dm.cmv_diesel_on!==false;
+
+      // Recalcular tudo
+      calcAll();
+      syncDiesel();
+
+      showToast(`Racional "${h.cliente||'sem nome'}" carregado com sucesso!`, '#2563EB');
+
+    } catch(err){
+      showToast('Erro ao carregar arquivo. Verifique se é um .json válido.', '#DC2626');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+  // Reset input para permitir carregar o mesmo arquivo novamente
+  event.target.value='';
+}
+
+// ── Toast de notificação ─────────────────────────────────────────────
+function showToast(msg, color){
+  const existing = document.getElementById('toast-msg');
+  if(existing) existing.remove();
+  const t = document.createElement('div');
+  t.id = 'toast-msg';
+  t.textContent = msg;
+  t.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:9999;
+    background:${color};color:#fff;padding:12px 20px;
+    border-radius:8px;font-weight:600;font-size:13px;
+    box-shadow:0 4px 16px rgba(0,0,0,.2);
+    animation:fadeInUp .3s ease;
+  `;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .4s'; setTimeout(()=>t.remove(),400); }, 3000);
+}
+
+// ── Animação toast ───────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════
+// EXPORT PDF
+// ═══════════════════════════════════════════════════════
+function exportPDF(){
+  // Update print header info
+  const cliente  = document.getElementById('i_cliente').value||'—';
+  const cotacao  = document.getElementById('i_cotacao').value||'—';
+  const data     = document.getElementById('i_data').value||'—';
+  const dias     = document.getElementById('i_dias').value||'—';
+  document.getElementById('ph_info').textContent =
+    `Cliente: ${cliente}  |  Cotação: ${cotacao}  |  Data: ${data}  |  Período: ${dias} dias`;
+
+  // Temporarily show diesel section label in print if active
+  window.print();
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  initChromeBanner();
+  // Verifica se há dados salvos embutidos no HTML
+  const savedScript = document.getElementById('__saved_data__');
+  if(savedScript){
+    try{
+      const data = JSON.parse(savedScript.textContent);
+      // Aplica header
+      const h=data.header||{};
+      const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
+      sv('i_cliente',h.cliente||''  );sv('i_obra',h.obra||''        );
+      sv('i_cotacao',h.cotacao||''  );sv('i_data',h.data||''        );
+      sv('i_dias',h.dias||'30'      );sv('i_yield_alvo',h.yield_alvo||'10');
+      sv('i_depr_gg',h.depr_gg||'10');sv('i_depr_ac',h.depr_ac||'20');
+      // Diesel
+      const d=data.diesel||{};
+      sv('diesel_incluso',d.incluso||'nao');sv('d_custo',d.custo||'10.50');
+      sv('d_pis',d.pis||'0.97'         );sv('d_markup',d.markup||'68'  );
+      sv('d_franquia',d.franquia||'720' );
+      // Equipamentos
+      const eqs=data.equipamentos||[];
+      eqRows=eqs.map(e=>({cat:e.cat||'',item:e.item||'',qtd:parseFloat(e.qtd)||1,
+        franq:parseFloat(e.franq)||0,capex:parseFloat(e.capex)||0,
+        yield_pct:parseFloat(e.yield)||0,preco:parseFloat(e.sist)||0,_manual:e.manual||false}));
+      buildEquip();
+      eqs.forEach((eq,i)=>{
+        const yEl=document.getElementById(`ei_yield_${i}`);
+        const lEl=document.getElementById(`ei_loc_${i}`);
+        if(yEl&&eq.yield)yEl.value=eq.yield;
+        if(lEl&&eq.loc)lEl.value=eq.loc;
+      });
+      // Serviços
+      const srvs=data.servicos||[];
+      srvRows=srvs.map(s=>({cat:s.cat||'',srv:s.srv||'',obs:s.obs||'',
+        qtd:parseFloat(s.qtd)||1,custo:parseFloat(s.custo)||0,preco:parseFloat(s.preco)||0}));
+      buildSrv();
+      srvs.forEach((sv2,i)=>{
+        const oEl=document.getElementById(`sc_obs_${i}`);
+        const dEl=document.getElementById(`sc_d_${i}`);
+        if(oEl)oEl.value=sv2.obs||'';
+        if(dEl)dEl.value=sv2.desc||'0';
+      });
+      // DRE
+      const dm=data.dre_manual||{};
+      sv('d_manut_pct',dm.manut_pct||'3');sv('d_adm_pct',dm.adm_pct||'15');
+      sv('d_fixos',dm.fixos||'0');
+      const cbk=document.getElementById('cmv_diesel_on');
+      if(cbk)cbk.checked=dm.cmv_diesel_on!==false;
+      buildDRE();
+      toggleDiesel();
+      calcAll();
+      syncDiesel();
+      return;
+    }catch(err){ console.warn('Erro ao auto-carregar dados:',err); }
+  }
+  // Inicialização normal (sem dados salvos)
+  document.getElementById('i_data').value=new Date().toISOString().split('T')[0];
+  buildEquip();
+  buildSrv();
+  buildDRE();
+  // RAF garante que o DOM foi pintado antes de calcular (fix iOS Safari)
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ calcAll(); syncDiesel(); }); });
+});
+</script>
+</body>
+</html>
